@@ -1,39 +1,48 @@
 <!-- HU-STATUS TEMPLATE - do NOT remove the <!-- ... --> markers or the table headers.
+
      Your weekly grade is read AUTOMATICALLY from this file:
+
        02-week/hu-status/README.md  (inside YOUR fork). English. -->
 
 # Weekly Status - Week 02
 
 <!-- CONFIG-START - must match your profile repo (username/username) CONFIG -->
+
 - FULL_NAME: Maria Sofia Aljure Herrera
 - GITHUB_USER: Sofialjure
 - TEAM:
-- SPRINT_GOAL: Estudiar las buenas prácticas de Scrum y Kanban, sus diferencias y formas de aplicación en equipos de desarrollo.
+- SPRINT_GOAL: Study Scrum and Kanban best practices, their differences, and how they can be applied in development teams.
+
 <!-- CONFIG-END -->
 
 ## 1. User stories worked this week
+
 | HU ID | Title | Status (todo/doing/done) | Evidence (PR or commit URL) |
 |---|---|---|---|
-|  |  |  |  |
+| | | | |
 
 ## 2. My individual contribution
-- Estudié los conceptos fundamentales de Scrum y Kanban.
-- Analicé sus principales características, elementos, ventajas y formas de aplicación.
-- Identifiqué buenas y malas prácticas de Scrum y Kanban.
-- Analicé las principales diferencias entre ambos enfoques.
-- Elaboré un documento sobre buenas prácticas de Scrum y Kanban.
-- Realicé ejemplos visuales de Scrum, Kanban y del uso combinado de ambos.
+
+- Studied the fundamental concepts of Scrum and Kanban.
+- Analyzed their main characteristics, elements, advantages, and ways of applying them.
+- Identified good and bad practices in Scrum and Kanban.
+- Analyzed the main differences between both approaches.
+- Created a document about Scrum and Kanban best practices.
+- Created visual examples of Scrum, Kanban, and the combined use of both approaches.
 
 ## 3. Blockers and risks
-- No se presentaron bloqueos relacionados con la actividad.
-- La definición del proyecto continúa pendiente de confirmación por parte del profesor.
+
+- No blockers related to the activity were encountered.
+- The project definition was still pending confirmation from the professor.
 
 ## 4. Plan for next week
-- Continuar con las actividades y material correspondiente a la Semana 03.
-- Actualizar el Weekly Status con las evidencias de las actividades realizadas.
-- Continuar avanzando en la definición del proyecto y sus requerimientos.
+
+- Continue with the activities and material corresponding to Week 03.
+- Update the Weekly Status with evidence of the activities completed.
+- Continue making progress on the project definition and its requirements.
 
 ## 5. Compliance self-check
+
 - [ ] Conventional Commits - `type(scope): summary`
 - [ ] Per-environment HU branch + PR to that environment (hu-xxx-dev -> develop, ...)
 - [ ] Testable acceptance criteria
@@ -43,26 +52,25 @@
 
 ## 6. Evidence links
 
-- [Documento de buenas prácticas de Scrum y Kanban](<Buenas prácticas de Scrum y Kanban.pdf>)
-- [Ilustraciones Kanban + Scrum](<Kanban + Scrum>)
+- [Scrum and Kanban Best Practices Document](<Buenas prácticas de Scrum y Kanban.pdf>)
+- [Kanban + Scrum Illustrations](<Kanban + Scrum>)
 
 ## Week 02 summary
 
 ### Scrum
 
-Estudié Scrum como un marco de trabajo ágil que organiza el desarrollo mediante ciclos cortos llamados Sprints. Se revisaron sus principales elementos, como Product Backlog, Sprint, Sprint Backlog e Incremento, además de los roles de Product Owner, Scrum Master y Developers. También se estudiaron buenas y malas prácticas relacionadas con la planificación, priorización, historias de usuario, reuniones, revisión y mejora continua.
+I studied Scrum as an agile framework that organizes development through short cycles called Sprints. I reviewed its main elements, such as the Product Backlog, Sprint, Sprint Backlog, and Increment, as well as the roles of Product Owner, Scrum Master, and Developers. I also studied good and bad practices related to planning, prioritization, user stories, meetings, review, and continuous improvement.
 
-![alt text](<Kanban + Scrum/Ejemplo Scrum.png>)
+![Scrum Example](<Kanban + Scrum/Ejemplo Scrum.png>)
 
 ### Kanban
 
-Estudié Kanban como un método para gestionar el trabajo mediante la visualización del flujo de tareas. Se revisaron prácticas como visualizar el trabajo, limitar el trabajo en progreso (WIP), definir claramente los estados, identificar bloqueos y mejorar continuamente el flujo.
+I studied Kanban as a method for managing work through the visualization of the workflow. I reviewed practices such as visualizing work, limiting work in progress (WIP), clearly defining states, identifying blockers, and continuously improving the workflow.
 
-![alt text](<Kanban + Scrum/Ejemplo Kanban.png>)
+![Kanban Example](<Kanban + Scrum/Ejemplo Kanban.png>)
 
+### Differences and combined use
 
-### Diferencias y uso conjunto
+I analyzed the differences between Scrum and Kanban. Scrum mainly works through Sprints, objectives, and defined events, while Kanban focuses on continuous flow, work visualization, and WIP limits. I also studied how both approaches can be used together by combining the structure of Scrum with tools for workflow visualization and control.
 
-Analicé las diferencias entre Scrum y Kanban. Scrum trabaja principalmente mediante Sprints, objetivos y eventos definidos, mientras que Kanban se centra en el flujo continuo, la visualización del trabajo y los límites WIP. También estudié que ambos pueden utilizarse conjuntamente, combinando la estructura de Scrum con las herramientas de visualización y control del flujo de Kanban.
-
-![alt text](<Kanban + Scrum/Uso conjunto Kanban+Scrum.png>)
+![Combined Kanban + Scrum Example](<Kanban + Scrum/Uso conjunto Kanban+Scrum.png>)
