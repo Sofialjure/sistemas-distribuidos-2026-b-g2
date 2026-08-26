@@ -1,55 +1,65 @@
 <!-- HU-STATUS TEMPLATE - do NOT remove the <!-- ... --> markers or the table headers.
+
      Your weekly grade is read AUTOMATICALLY from this file:
+
        01-week/hu-status/README.md  (inside YOUR fork). English. -->
 
 # Weekly Status - Week 01
 
 <!-- CONFIG-START - must match your profile repo (username/username) CONFIG -->
+
 - FULL_NAME: Maria Sofia Aljure Herrera
-- GITHUB_USER:  Sofialjure
+- GITHUB_USER: Sofialjure
 - TEAM:
-- SPRINT_GOAL: Comprender los fundamentos de los sistemas distribuidos y las prácticas de ingeniería vistas durante la semana.
+- SPRINT_GOAL: Understand the fundamentals of distributed systems and the engineering practices studied during the week.
+
 <!-- CONFIG-END -->
 
-## 1. User stories worked this week 
-| HU ID | Title | Status (todo/doing/done) | Evidence (PR or commit URL) | 
-|---|---|---|---| 
-|  |  |  |  | 
- 
-## 2. My individual contribution 
-- Estudié los temas de la Sesión 1 sobre sistemas distribuidos, modelos de fallos, relojes lógicos, consistencia, CAP/PACELC, replicación, quórums, consenso y comunicación.
-- Realicé una infografía como resumen de la Sesión 1.
-- Realicé una infografía como resumen de la Sesión 2
-- Participé en el desarrollo de la propuesta inicial del proyecto.
+## 1. User stories worked this week
 
-## 3. Blockers and risks 
-- El proyecto definitivo todavía no ha sido aprobado por el profesor.
-- El PDR y las historias de usuario del proyecto definitivo están pendientes de definición.
+| HU ID | Title | Status (todo/doing/done) | Evidence (PR or commit URL) |
+|---|---|---|---|
+| | | | |
 
-## 4. Plan for next week 
-- Continuar con las actividades y el material correspondiente a la Semana 2.
-- Actualizar el Weekly Status con las evidencias de las actividades realizadas.
-- Continuar con la definición del proyecto una vez que el profesor confirme la propuesta.
+## 2. My individual contribution
 
-## 5. Compliance self-check 
-- [ ] Conventional Commits - `type(scope): summary` 
-- [ ] Per-environment HU branch + PR to that environment (hu-xxx-dev -> develop, ...) 
-- [ ] Testable acceptance criteria 
-- [ ] Tests added/updated (unit / integration) 
-- [ ] DDD / hexagonal boundaries respected (domain has no I/O) 
-- [ ] No secrets; config via environment variables 
- 
-## 6. Evidence links 
-- [Infografía Sesión 1](<Imagen Semana 1 - Sesión 1 - Modelos, tiempo, consistencia y compensaciones.png>)
-- [Infografía Sesión 2](<Imagen Semana 1 - Sesión 2 - Fundamentos de ingeniería profesional para sistemas distribuidos.png>)
-- [Propuesta inicial del proyecto](<Propuesta Plataforma Telemedicina Agente Inteligente.pdf>)
+- Studied the Session 1 topics about distributed systems, system and failure models, logical clocks, consistency, CAP/PACELC, replication, quorums, consensus, and communication.
+- Created an infographic summarizing Session 1.
+- Created an infographic summarizing Session 2.
+- Participated in the development of the initial project proposal.
+
+## 3. Blockers and risks
+
+- The final project had not yet been approved by the professor.
+- The PDR and user stories for the final project were still pending definition.
+
+## 4. Plan for next week
+
+- Continue with the activities and material corresponding to Week 02.
+- Update the Weekly Status with evidence of the activities completed.
+- Continue defining the project once the professor confirms the proposal.
+
+## 5. Compliance self-check
+
+- [ ] Conventional Commits - `type(scope): summary`
+- [ ] Per-environment HU branch + PR to that environment (hu-xxx-dev -> develop, ...)
+- [ ] Testable acceptance criteria
+- [ ] Tests added/updated (unit / integration)
+- [ ] DDD / hexagonal boundaries respected (domain has no I/O)
+- [ ] No secrets; config via environment variables
+
+## 6. Evidence links
+
+- [Session 1 Infographic](<Imagen Semana 1 - Sesión 1 - Modelos, tiempo, consistencia y compensaciones.png>)
+- [Session 2 Infographic](<Imagen Semana 1 - Sesión 2 - Fundamentos de ingeniería profesional para sistemas distribuidos.png>)
+- [Initial Project Proposal](<Propuesta Plataforma Telemedicina Agente Inteligente.pdf>)
 
 ## Week 01 summary
 
 ### Session 1 — Distributed Systems
 
-Durante esta sesión estudié los fundamentos de los sistemas distribuidos y cómo cambian el estado, el tiempo y los fallos cuando diferentes nodos se comunican mediante una red. También estudié los modelos de sistema y fallos, comunicación síncrona y asíncrona, relojes lógicos y causalidad, consistencia, CAP y PACELC, replicación, particionamiento, quórums, consenso y semántica de entrega.
+During this session, I studied the fundamentals of distributed systems and how state, time, and failures change when different nodes communicate through a network. I also studied system and failure models, synchronous and asynchronous communication, logical clocks and causality, consistency, CAP and PACELC, replication, partitioning, quorums, consensus, and delivery semantics.
 
 ### Session 2 — Professional Engineering Foundations
 
-Durante esta sesión estudié fundamentos de ingeniería profesional aplicados a sistemas distribuidos, incluyendo DDD, diseño estratégico y táctico, Bounded Context, entidades, objetos de valor, agregados, arquitectura hexagonal, SOLID, Clean Code, patrones de diseño y pruebas.
+During this session, I studied professional engineering foundations applied to distributed systems, including DDD, strategic and tactical design, Bounded Contexts, entities, value objects, aggregates, Hexagonal Architecture, SOLID, Clean Code, design patterns, and testing.
