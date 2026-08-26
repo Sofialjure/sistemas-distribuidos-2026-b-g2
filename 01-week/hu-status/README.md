@@ -31,7 +31,8 @@
 ## 3. Blockers and risks
 
 - The final project had not yet been approved by the professor.
-- The PDR and user stories for the final project were still pending definition.
+- The PDR and user stories for the final project were still pending definition at this stage.
+- The project was still in its initial proposal stage, so the complete requirements had not yet been formally documented.
 
 ## 4. Plan for next week
 
@@ -53,6 +54,7 @@
 - [Session 1 Infographic](<Imagen Semana 1 - Sesión 1 - Modelos, tiempo, consistencia y compensaciones.png>)
 - [Session 2 Infographic](<Imagen Semana 1 - Sesión 2 - Fundamentos de ingeniería profesional para sistemas distribuidos.png>)
 - [Initial Project Proposal](<Propuesta Plataforma Telemedicina Agente Inteligente.pdf>)
+- [TeleMed IA PDR - Requirements and User Stories](../../03-week/hu-status/PDR_TeleMed_IA.pdf)
 
 ## Week 01 summary
 
@@ -63,3 +65,16 @@ During this session, I studied the fundamentals of distributed systems and how s
 ### Session 2 — Professional Engineering Foundations
 
 During this session, I studied professional engineering foundations applied to distributed systems, including DDD, strategic and tactical design, Bounded Contexts, entities, value objects, aggregates, Hexagonal Architecture, SOLID, Clean Code, design patterns, and testing.
+
+### Initial Project Proposal and PDR Evolution
+
+During Week 01, the TeleMed IA project was still in its initial proposal stage. At this point, the complete Product Requirements Document (PDR), including the final functional requirements and user stories, had not yet been developed.
+
+The evidence for this week therefore corresponds to the initial project proposal, which represented the project idea and its initial scope.
+
+The initial proposal was later extended during Week 03 into the complete **Product Requirements Document (PDR)**, where the project requirements, user stories, non-functional requirements, business rules, and other project definitions were documented.
+
+The PDR is therefore linked here as a reference to show the evolution of the project, but it was developed after Week 01.
+
+- [Initial Project Proposal](<Propuesta Plataforma Telemedicina Agente Inteligente.pdf>)
+- [TeleMed IA PDR - Requirements and User Stories](../../03-week/hu-status/PDR_TeleMed_IA.pdf)
