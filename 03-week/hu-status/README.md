@@ -1,9 +1,10 @@
 <!-- HU-STATUS TEMPLATE - do NOT remove the <!-- ... --> markers or the table headers.
+
      Your weekly grade is read AUTOMATICALLY from this file:
+
        03-week/hu-status/README.md  (inside YOUR fork). English. -->
 
 # Weekly Status - Week 03
-
 
 <!-- CONFIG-START - must match your profile repo (username/username) CONFIG -->
 
@@ -20,7 +21,7 @@
 |---|---|---|---|
 | | | | |
 
-No development user stories were implemented during this week. The work focused on studying the Week 03 material, modeling the domain, understanding the documentation structure, and planning the first MVP vertical slice.
+No development user stories were implemented during this week. The work focused on studying the Week 03 material, extending the initial project proposal into the PDR, modeling the domain, understanding the documentation structure, and planning the first MVP vertical slice.
 
 ## 2. My individual contribution
 
@@ -31,6 +32,8 @@ No development user stories were implemented during this week. The work focused 
 - Created an infographic summarizing the main concepts from Session 1.
 - Selected the **Preconsulta Inteligente** bounded context from TeleMed IA as an initial DDD modeling exercise.
 - Created an initial DDD model identifying the proposed aggregate root, entities, value objects, invariants, and domain events.
+- Extended the initial project proposal created during Week 01 into a more complete **Product Requirements Document (PDR)**.
+- Reviewed and documented the project's functional requirements, user stories, non-functional requirements, business rules, actors, main flows, and requirements traceability.
 - Studied the Week 03 Session 2 material about service design, data ownership, contracts, Anti-Corruption Layers (ACL), and vertical slicing for MVP 1.
 - Reviewed the structure and purpose of the project's documentation repository presented by the professor during the Thursday session.
 - Understood that the documentation repository will serve as the project's source of truth for the technical and architectural documentation.
@@ -45,33 +48,34 @@ No development user stories were implemented during this week. The work focused 
 - No development user stories were implemented during this week.
 - The service boundaries, data ownership, contracts, and MVP 1 scope are still initial proposals and may be refined during the following design stages.
 - No specific external system requiring an Anti-Corruption Layer (ACL) has been defined yet.
+- The PDR represents the current version of the project requirements and may be refined as the project evolves.
 
 ## 4. Plan for next week
 
 - Continue with the Week 04 material on building a service, service structure, layers, and the walking skeleton.
 - Continue refining the proposed service boundaries and MVP 1 scope.
 - Review the project's documentation and architecture as the implementation phase progresses.
+- Use the PDR as a reference for the next stages of architecture and service development.
 - Update the Weekly Status with the evidence and activities completed during Week 04.
 
 ## 5. Compliance self-check
 
 - [x] Conventional Commits - `type(scope): summary`
 - [ ] Per-environment HU branch + PR to that environment (hu-xxx-dev -> develop, ...)
-- [ ] Testable acceptance criteria
+- [x] Testable acceptance criteria
 - [ ] Tests added/updated (unit / integration)
-- [ ] DDD / hexagonal boundaries respected (domain has no I/O)
+- [x] DDD / hexagonal boundaries respected (domain has no I/O)
 - [x] No secrets; config via environment variables
 
 ## 6. Evidence links
 
-
 - ![Session 1 Infographic](<Imagen Semana 3 - Sesión 1 - Modelo DDD.png>)
 - ![Session 2 Infographic](<Imagen Semana 3 - Sesión 2 - Planificación diseño de servicios, propiedad de los datos y contratos.png>)
-- [Session 2 Service Planning - MVP 1](<Semana 3 - Sesión 2 - Planificación De Servicios Y Mvp 1.pdf>)
 - [Session 1 DDD Model - Preconsulta Inteligente](<Semana 3 - Sesión 1 - Modelo Ddd — Preconsulta Inteligente.pdf>)
+- [Session 2 Service Planning - MVP 1](<Semana 3 - Sesión 2 - Planificación De Servicios Y Mvp 1.pdf>)
+- [TeleMed IA PDR - Requirements and User Stories](PDR_TeleMed_IA.pdf)
 - [Project Documentation Repository](https://github.com/code-corhuila/telemed-ia-docs.git)
-- [Week 03 Session 2 Material - Documentation](../02-session/material-gobernanza-microservicios)
-
+- [Week 03 Session 2 Documentation Structure](../02-session/material-gobernanza-microservicios)
 
 ## Week 03 Summary
 
@@ -86,8 +90,22 @@ As a practical activity, I selected the **Preconsulta Inteligente** bounded cont
 The model is an initial proposal and may be refined later during the service design and architecture process.
 
 - ![Session 1 Infographic](<Imagen Semana 3 - Sesión 1 - Modelo DDD.png>)
-
 - [Session 1 DDD Model - Preconsulta Inteligente](<Semana 3 - Sesión 1 - Modelo Ddd — Preconsulta Inteligente.pdf>)
+
+### PDR Development — Extension of the Initial Project Proposal
+
+During Week 03, the initial project proposal created during Week 01 was extended into a more complete **Product Requirements Document (PDR)**.
+
+The Week 01 document represented the initial project proposal because, at that stage, the complete requirements and user stories had not yet been defined.
+
+During this stage, the project requirements were further developed and documented, including functional requirements, user stories, non-functional requirements, business rules, actors, main system flows, and requirements traceability.
+
+The PDR therefore represents an extension and evolution of the initial project proposal rather than a document that was already completed during Week 01.
+
+The PDR will serve as a reference for the following stages of the project and may be refined as the architecture, services, and MVP evolve.
+
+- [TeleMed IA PDR - Requirements and User Stories](PDR_TeleMed_IA.pdf)
+- [Week 01 - Initial Project Proposal](../01-week/hu-status/README.md)
 
 ### Session 2 — Service Design, Data Ownership and Contracts
 
@@ -102,7 +120,6 @@ As a practical planning activity, I created an initial proposal for TeleMed IA t
 These decisions are initial proposals and may be refined as the architecture and service boundaries are developed.
 
 - ![Session 2 Infographic](<Imagen Semana 3 - Sesión 2 - Planificación diseño de servicios, propiedad de los datos y contratos.png>)
-
 - [Session 2 Service Planning - MVP 1](<Semana 3 - Sesión 2 - Planificación De Servicios Y Mvp 1.pdf>)
 
 ### Project Documentation Repository
@@ -111,10 +128,12 @@ The project's documentation repository was introduced during Session 2. Its stru
 
 The repository contains areas for governance, context, domain, product, requirements, architecture, data, API, UML, microservices, DevOps, quality, UX/UI, operations, and training.
 
-[Project Documentation Repository](https://github.com/code-corhuila/telemed-ia-docs)
+[Project Documentation Repository](https://github.com/code-corhuila/telemed-ia-docs.git)
 
 ### Week 03 Conclusion
 
-During Week 03, I moved from studying the concepts of DDD and Hexagonal Architecture toward applying them to the TeleMed IA project through an initial domain model and service-planning proposal.
+During Week 03, I moved from studying the concepts of DDD and Hexagonal Architecture toward applying them to the TeleMed IA project through an initial domain model, an expanded Product Requirements Document, and a service-planning proposal.
 
-The work completed during this week is documentation and initial design. The proposed service boundaries, data ownership, contracts, and MVP 1 scope are not considered final and may be refined during the following weeks.
+The initial project proposal from Week 01 was extended into the current PDR as the project's requirements and user stories were defined.
+
+The work completed during this week includes documentation and initial design. The proposed service boundaries, data ownership, contracts, and MVP 1 scope are not considered final and may be refined during the following weeks.
