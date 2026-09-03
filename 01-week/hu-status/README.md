@@ -10,7 +10,7 @@
 
 - FULL_NAME: Maria Sofia Aljure Herrera
 - GITHUB_USER: Sofialjure
-- TEAM:
+- TEAM: Telemed - Group 2
 - SPRINT_GOAL: Understand the fundamentals of distributed systems and the engineering practices studied during the week.
 
 <!-- CONFIG-END -->
@@ -55,6 +55,22 @@
 - [Session 2 Infographic](<Imagen Semana 1 - Sesión 2 - Fundamentos de ingeniería profesional para sistemas distribuidos.png>)
 - [Initial Project Proposal](<Propuesta Plataforma Telemedicina Agente Inteligente.pdf>)
 - [TeleMed IA PDR - Requirements and User Stories](../../03-week/hu-status/PDR_TeleMed_IA.pdf)
+
+## 7. Optional Activities
+
+During Week 01, the team also completed the optional activities corresponding to Session 1 and Session 2. The detailed development of each activity is documented separately.
+
+### Week 01 — Session 1
+
+The Session 1 activity focused on applying the distributed-systems concepts studied during the session to the initial TeleMed IA project. The team started the initial backlog, identified the main system operations, and considered the consistency and delivery semantics required for those operations. Appointment scheduling and notification processing were also analyzed as examples of operations affected by concurrency, communication failures, delivery guarantees, and idempotency.
+
+- [Optional Activity — Week 1 · Session 1](<Optional Activity Week 1 - Session 1.md>)
+
+### Week 01 — Session 2
+
+The Session 2 activity focused on applying professional engineering practices to the initial TeleMed IA project. The activity covered bounded contexts, business-domain boundaries, architectural alternatives, Modular Monolith with Hexagonal Architecture, future evolution toward microservices, backlog definition, testable acceptance criteria, and the role of ADRs in documenting technical decisions.
+
+- [Optional Activity — Week 1 · Session 2](<Optional Activity Week 1 - Session 2.md>)
 
 ## Week 01 summary
 
