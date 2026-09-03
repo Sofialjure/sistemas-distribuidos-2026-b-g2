@@ -10,7 +10,7 @@
 
 - FULL_NAME: Maria Sofia Aljure Herrera
 - GITHUB_USER: Sofialjure
-- TEAM:
+- TEAM: Telemed - Group 2
 - SPRINT_GOAL: Study Scrum and Kanban best practices, their differences, and how they can be applied in development teams.
 
 <!-- CONFIG-END -->
@@ -54,6 +54,22 @@
 
 - [Scrum and Kanban Best Practices Document](<Buenas prácticas de Scrum y Kanban.pdf>)
 - [Kanban + Scrum Illustrations](<Kanban + Scrum>)
+
+## 7. Optional Activities
+
+During Week 02, the team also completed the optional activities corresponding to Session 1 and Session 2. The detailed development of each activity is documented separately.
+
+### Week 02 — Session 1
+
+The Session 1 activity focused on analyzing distributed architecture styles and applying those concepts to the TeleMed IA project. The team compared client-server, peer-to-peer, layered architecture, SOA, microservices, and event-driven architecture, and then identified business capabilities as the basis for bounded contexts and future service boundaries. A Modular Monolith with Hexagonal Architecture was considered appropriate for the MVP, with future evolution toward microservices when a concrete scalability, deployment, or business need justifies it.
+
+- [Optional Activity — Week 2 · Session 1](<Optional Activity Week 2 - Session 1.md>)
+
+### Week 02 — Session 2
+
+The Session 2 activity focused on transforming the architectural analysis into a planning decision for TeleMed IA. The team mapped the main bounded contexts, evaluated architectural alternatives, defined the Modular Monolith with Hexagonal Architecture as the MVP direction, identified future microservice boundaries, and translated the decision into architectural backlog items with testable acceptance criteria.
+
+- [Optional Activity — Week 2 · Session 2](<Optional Activity Week 2 - Session 2.md>)
 
 ## Week 02 summary
 
