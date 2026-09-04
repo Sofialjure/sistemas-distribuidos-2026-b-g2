@@ -353,6 +353,21 @@ This configuration demonstrates the use of Docker Compose to coordinate multiple
 - [MVP Technical Documentation](https://github.com/JulianaFerro1428/telemed-ai/blob/main/Documentacion_MVP_TeleMed_IA.pdf)
 - [MVP Mockup - Figma](https://www.figma.com/proto/UycxwgGJpp0ZppwTANL0jo/Untitled?node-id=107-8&p=f&viewport=-1543%2C448%2C0.09&t=g2ePMjqU00Hzf2rQ-1&scaling=min-zoom&content-scaling=fixed&starting-point-node-id=4%3A7&page-id=0%3A1&show-proto-sidebar=1)
 
+
+## 7. Optional Activities
+
+### Session 1 — Containerization with Docker
+
+I documented the application of Docker containerization to the TeleMed IA MVP. The activity covers the use of multi-stage Dockerfiles, `.dockerignore` files, Docker Compose, PostgreSQL, environment variables, service dependencies, healthchecks and persistent volumes. It also documents how the containerized environment supports the execution of MVP 1.
+
+[Optional Activity — Week 05 · Session 1](<Optional Activity Week 5 - Session 1.md>)
+
+### Session 2 — MVP 1 Release Preparation
+
+I documented the preparation of MVP 1 as the main deliverable for Cut 1. The activity covers the selected MVP scope, release preparation, Definition of Done and release checklist, individual weekly evidence, the working-system demonstration planned for Week 06, and the pending `v1.0.0` tag, presentation, feedback and retrospective.
+
+[Optional Activity — Week 05 · Session 2](<Optional Activity — Week 05 · Session 2.MD>)
+
 ## Week 05 summary
 
 Week 05 was focused on consolidating and completing the first MVP increment of TeleMed IA and preparing it for the final Cut 1 evaluation.
