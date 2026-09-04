@@ -10,7 +10,7 @@
 
 - FULL_NAME: Maria Sofia Aljure Herrera
 - GITHUB_USER: Sofialjure
-- TEAM:
+- TEAM:  Telemed - Group 2
 - SPRINT_GOAL: Study Domain-Driven Design, Hexagonal Architecture, service planning, data ownership, service contracts, Anti-Corruption Layers, and vertical slicing for MVP 1.
 
 <!-- CONFIG-END -->
@@ -69,13 +69,30 @@ No development user stories were implemented during this week. The work focused 
 
 ## 6. Evidence links
 
-- ![Session 1 Infographic](<Imagen Semana 3 - Sesión 1 - Modelo DDD.png>)
-- ![Session 2 Infographic](<Imagen Semana 3 - Sesión 2 - Planificación diseño de servicios, propiedad de los datos y contratos.png>)
-- [Session 1 DDD Model - Preconsulta Inteligente](<Semana 3 - Sesión 1 - Modelo Ddd — Preconsulta Inteligente.pdf>)
-- [Session 2 Service Planning - MVP 1](<Semana 3 - Sesión 2 - Planificación De Servicios Y Mvp 1.pdf>)
+- ![Image Week 3 - Session 1](<Image Week 3 - Session 1 - DDD Model.png>)
+- ![Image Week 3 - Session 2 ](<Image Week 3 - Session 2 - Service Design Planning, Data Ownership and Contracts.png>)
+- [Session 1 DDD Model - Preconsulta Inteligen](<Optional Activity Week 3 - Session 1 - DDD Model - Intelligent Pre-Consultation.pdf>)
+- [Session 2 Service Planning - MVP 1](<Optional Activity Week 3 - Session 2 - Service and MVP 1 Planning.pdf>)
 - [TeleMed IA PDR - Requirements and User Stories](PDR_TeleMed_IA.pdf)
 - [Project Documentation Repository](https://github.com/code-corhuila/telemed-ia-docs.git)
 - [Week 03 Session 2 Documentation Structure](../02-session/material-gobernanza-microservicios)
+
+## 7. Optional Activities
+
+During Week 03, the optional activities corresponding to Session 1 and Session 2 were completed as part of the practical application of the concepts studied during the week. The detailed development of each activity is documented separately.
+
+### Week 03 — Session 1
+
+The Session 1 activity focused on applying Domain-Driven Design to a selected bounded context of TeleMed IA. The **Preconsulta Inteligente** context was selected and modeled by identifying **Preconsulta** as the proposed Aggregate Root, together with its entities, value objects, invariants, and domain events. The activity also considered the relationship between the domain model and the principles of keeping the domain independent from infrastructure and framework-specific concerns.
+
+- [Otional Activity .MD](<Optional Activity Week 3 - Session 1.md>)
+- [Optional Activity — Week 3 · Session 1 - DDD Model - Intelligent Pre-Consultation](<Optional Activity Week 3 - Session 1 - DDD Model - Intelligent Pre-Consultation.pdf>)
+### Week 03 — Session 2
+
+The Session 2 activity focused on planning the first MVP 1 vertical feature from a service-design perspective. The activity defined an initial proposal for data ownership, service contracts, synchronous and asynchronous communication, Anti-Corruption Layer considerations, and the **Preconsulta y agendamiento de una cita** vertical slice, divided into user stories with testable acceptance criteria.
+
+- [Optional Activity — Week 3 · Session 2 .MD](<Optional Activity Week 3 - Session 2.md>)
+- [Optional Activity — Week 3 · Session 2 - Service and MVP 1 Planning](<Optional Activity Week 3 - Session 2 - Service and MVP 1 Planning.pdf>)
 
 ## Week 03 Summary
 
@@ -89,8 +106,8 @@ As a practical activity, I selected the **Preconsulta Inteligente** bounded cont
 
 The model is an initial proposal and may be refined later during the service design and architecture process.
 
-- ![Session 1 Infographic](<Imagen Semana 3 - Sesión 1 - Modelo DDD.png>)
-- [Session 1 DDD Model - Preconsulta Inteligente](<Semana 3 - Sesión 1 - Modelo Ddd — Preconsulta Inteligente.pdf>)
+- [Image Week 3 - Session 1](<Image Week 3 - Session 1 - DDD Model.png>)
+- [teSession 1 DDD Model - Preconsulta Inteligen](<Optional Activity Week 3 - Session 1 - DDD Model - Intelligent Pre-Consultation.pdf>)
 
 ### PDR Development — Extension of the Initial Project Proposal
 
@@ -119,8 +136,8 @@ As a practical planning activity, I created an initial proposal for TeleMed IA t
 
 These decisions are initial proposals and may be refined as the architecture and service boundaries are developed.
 
-- ![Session 2 Infographic](<Imagen Semana 3 - Sesión 2 - Planificación diseño de servicios, propiedad de los datos y contratos.png>)
-- [Session 2 Service Planning - MVP 1](<Semana 3 - Sesión 2 - Planificación De Servicios Y Mvp 1.pdf>)
+- [Image Week 3 - Session 2 ](<Image Week 3 - Session 2 - Service Design Planning, Data Ownership and Contracts.png>)
+- [Session 2 Service Planning - MVP 1](<Optional Activity Week 3 - Session 2 - Service and MVP 1 Planning.pdf>)
 
 ### Project Documentation Repository
 
