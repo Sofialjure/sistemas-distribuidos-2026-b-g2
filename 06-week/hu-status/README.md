@@ -78,12 +78,19 @@ The individual commits from Weeks 1 to 5 are documented separately as historical
 The Week 06 activities and participation are supported through:
 
 Evidence of the MVP 1 presentation and technical demonstration.
+
 Evidence of the team documentation and MVP release.
+
 Evidence of my contributions to the team documentation repository.
+
 Evidence of the GitHub Project Board organization, where my contribution reached HU-013.
+
 Documentation and screenshots of the Week 06 optional activities.
+
 Docker Compose and environment configuration evidence.
+
 The .env.example configuration evidence in the MVP repository.
+
 The Environment Configuration Matrix for Development, QA, and Production.
 
 ### Individual evidence from my fork
