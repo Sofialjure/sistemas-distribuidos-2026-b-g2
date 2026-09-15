@@ -34,7 +34,8 @@ For asynchronous communication, events and messaging will be considered for oper
 | Intelligent Agent → Appointment Scheduling | Synchronous | REST | The intelligent agent may need an immediate response when consulting availability or requesting an appointment operation. |
 | Appointment Scheduling → Notifications | Asynchronous | Event / Topic | A notification does not need to block the appointment operation. The appointment can be processed while the notification is handled asynchronously. |
 | Appointment Scheduling → Medical Consultation | Synchronous | REST | When information from a medical process is required immediately, request/response communication provides a direct response. |
-| Appointment Scheduling → Audit/other consumers | Asynchronous | Event / Topic | Multiple consumers can react independently to an appointment-related event without tightly coupling the services. |
+| Appointment Scheduling → Document Generation | Synchronous | REST | The document service may be requested after an appointment-related medical process when a consultation summary must be generated as a PDF. |
+| Identity & Access → Other Bounded Contexts | Synchronous | REST / JWT | Other services need authentication and authorization information to validate the identity, role and permissions of the requester. |
 
 > **Note:** These interactions are part of the planned microservice communication design. They do not represent currently deployed independent services in MVP 1.
 
@@ -126,10 +127,8 @@ Appointment Service
         v
    Message Broker
         |
-        +--------------------+
-        |                    |
-        v                    v
-Notification Service    Audit Service
+        v
+Notification Service
 ```
 
 A message broker such as Kafka or RabbitMQ can be used in the future microservice architecture.
@@ -163,9 +162,7 @@ Producer
     |
     +------> Notification Service
     |
-    +------> Audit Service
-    |
-    +------> Other Consumer
+    +------> Other Bounded Context Consumer
 ```
 
 This model is useful when several bounded contexts need to react to the same business event.
@@ -287,19 +284,19 @@ A long chain of synchronous calls can create cascading failures.
 Example:
 
 ```
+Intelligent Agent
+        |
+        v
 Appointment Service
         |
         v
-Payment Service
-        |
-        v
-Fraud Detection Service
+Patient Service
         |
         v
 Slow response
 ```
 
-If the last service becomes slow, the previous services may remain waiting for responses.
+If a synchronous dependency becomes slow, the calling services may remain waiting for responses.
 
 Potential consequences include:
 - Increased latency.
