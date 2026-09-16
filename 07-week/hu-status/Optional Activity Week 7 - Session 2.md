@@ -501,7 +501,7 @@ MVP 1 remains a modular monolith. These artifacts provide the integration baseli
 
 The following evidence shows the versioned OpenAPI contract for the planned communication between Intelligent Agent and Appointment Scheduling.
 
-![OpenAPI REST Contract](<Image Week 7 - Session 2 - OpenAPI REST Contract.png>)
+![alt text](<Optional Activity Image Week 7 - Session 2 - OpenAPI REST Contract.png>)
 
 The contract defines the `/api/v1/appointments/availability` endpoint, its request parameters and the expected REST response.
 
@@ -509,7 +509,7 @@ The contract defines the `/api/v1/appointments/availability` endpoint, its reque
 
 The following evidence shows the JSON Schema defined for the planned `AppointmentCreated` event.
 
-![AppointmentCreated Event Contract](<Image Week 7 - Session 2 - AppointmentCreated Event Contract.png>)
+![alt text](<Optional Activity Image Week 7 - Session 2 - AppointmentCreated Event Contract.png>)
 
 The schema defines the required event fields, including `eventId`, `eventType`, `appointmentId`, `patientId`, and `occurredAt`.
 
