@@ -485,59 +485,7 @@ The following artifacts have been prepared as the contractual design baseline:
 
 The independent microservices and their CI contract-testing pipeline are planned for the next development stage and are not claimed as implemented in MVP 1.
 
-## 17. Evidence
-
-### Evidence 1 — REST Contract
-
-The OpenAPI contract defines the planned interaction between:
-
-```
-Intelligent Agent
-        ↓
-Appointment Scheduling
-```
-
-File:
-
-```
-appointment-service.openapi.yaml
-```
-
-### Evidence 2 — Event Contract
-
-The JSON Schema defines:
-
-```
-AppointmentCreated
-```
-
-File:
-
-```
-AppointmentCreated.schema.json
-```
-
-### Evidence 3 — Contract Testing Strategy
-
-The activity documents the planned consumer-driven contract test and CI flow:
-
-```
-Consumer
-   ↓
-Contract
-   ↓
-Provider Verification
-   ↓
-CI
-   ↓
-PASS / FAIL
-```
-
-### Evidence 4 — Integration Stories
-
-Five integration stories were defined with testable acceptance criteria for the next development stage.
-
-## 18. Conclusion
+## 17. Conclusion
 
 Versioned contracts provide a stable communication agreement between TeleMed IA bounded contexts as they evolve into independent microservices.
 
