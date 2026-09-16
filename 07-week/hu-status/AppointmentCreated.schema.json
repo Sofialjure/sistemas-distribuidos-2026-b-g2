@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AppointmentCreated",
+  "description": "Planned event contract for a new appointment in TeleMed IA.",
+  "type": "object",
+  "required": [
+    "eventId",
+    "eventType",
+    "appointmentId",
+    "patientId",
+    "occurredAt"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "description": "Unique identifier used for duplicate detection and idempotent processing.",
+      "examples": [
+        "evt-001"
+      ]
+    },
+    "eventType": {
+      "type": "string",
+      "const": "AppointmentCreated",
+      "description": "Identifies the type of domain event."
+    },
+    "appointmentId": {
+      "type": "string",
+      "description": "Unique identifier of the appointment.",
+      "examples": [
+        "APT-100"
+      ]
+    },
+    "patientId": {
+      "type": "string",
+      "description": "Identifier of the patient associated with the appointment.",
+      "examples": [
+        "PAT-20"
+      ]
+    },
+    "occurredAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp when the event occurred.",
+      "examples": [
+        "2026-09-15T10:00:00Z"
+      ]
+    }
+  },
+  "additionalProperties": false
+}
