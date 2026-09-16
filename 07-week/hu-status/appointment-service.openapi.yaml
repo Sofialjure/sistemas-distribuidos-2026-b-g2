@@ -1,0 +1,89 @@
+openapi: 3.0.3
+
+info:
+  title: TeleMed IA Appointment Service API
+  version: 1.0.0
+  description: >
+    Planned REST contract for communication between the Intelligent Agent
+    and the Appointment Scheduling bounded context when TeleMed IA evolves
+    from the current modular monolith to independent microservices.
+
+servers:
+  - url: https://api.telemed.example.com
+
+paths:
+  /api/v1/appointments/availability:
+    get:
+      summary: Check appointment availability
+      description: >
+        Returns the availability of a professional for a specific date.
+        This contract is planned for the future appointment-service.
+      operationId: checkAvailability
+
+      parameters:
+        - name: professionalId
+          in: query
+          required: true
+          description: Identifier of the medical professional.
+          schema:
+            type: string
+            example: PRO-001
+
+        - name: date
+          in: query
+          required: true
+          description: Date for which availability is requested.
+          schema:
+            type: string
+            format: date
+            example: "2026-09-20"
+
+      responses:
+        "200":
+          description: Availability information returned successfully.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AvailabilityResponse"
+              example:
+                professionalId: PRO-001
+                date: "2026-09-20"
+                available: true
+
+        "400":
+          description: Invalid request parameters.
+
+        "404":
+          description: Professional not found.
+
+        "500":
+          description: Internal service error.
+
+components:
+
+  schemas:
+
+    AvailabilityResponse:
+      type: object
+      required:
+        - professionalId
+        - date
+        - available
+
+      properties:
+
+        professionalId:
+          type: string
+          description: Identifier of the medical professional.
+          example: PRO-001
+
+        date:
+          type: string
+          format: date
+          description: Date checked for availability.
+          example: "2026-09-20"
+
+        available:
+          type: boolean
+          description: Indicates whether the professional has availability.
+          example: true
