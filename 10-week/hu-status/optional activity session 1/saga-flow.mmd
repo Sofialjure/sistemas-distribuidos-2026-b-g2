@@ -1,0 +1,12 @@
+flowchart TD
+    A[Appointment Service] -->|local transaction: appointment + AppointmentCreated| DB1[(appointment.db)]
+    DB1 --> O[Outbox: PENDING to PUBLISHED]
+    O -->|retryable publication| B[Simulated Message Broker]
+    B -->|AppointmentCreated| M[Medical Consultation Service]
+    M --> DB2[(medical_consultation.db)]
+    DB2 -->|success: consultation + processed_events| S[Saga succeeds]
+    M -->|injected failure; transaction rolls back| F[Failure path]
+    F --> C[Compensation: AppointmentCancelled]
+    C -->|appointment_id| B
+    B -->|AppointmentCancelled| A
+    A -->|set status CANCELLED| DB1
