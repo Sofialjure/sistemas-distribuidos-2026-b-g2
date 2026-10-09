@@ -1,0 +1,1184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:bioc="http://bpmn.io/schema/bpmn/biocolor/1.0" xmlns:color="http://www.omg.org/spec/BPMN/non-normative/color/1.0" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_TeleMed" targetNamespace="http://telemedia.core/bpmn" exporter="Camunda Modeler" exporterVersion="5.51.1">
+  <bpmn:collaboration id="Collaboration_Core">
+    <bpmn:participant id="Participant_Patient" name="Patient" processRef="Process_Patient" />
+    <bpmn:participant id="Participant_Agent" name="intelligent-agent" processRef="Process_Agent" />
+    <bpmn:participant id="Participant_Appointment" name="appointment-scheduling" processRef="Process_Appointment" />
+    <bpmn:participant id="Participant_Professional" name="professional-management" processRef="Process_Professional" />
+    <bpmn:participant id="Participant_Physician" name="Physician" processRef="Process_Physician" />
+    <bpmn:participant id="Participant_Consultation" name="medical-consultation" processRef="Process_Consultation" />
+    <bpmn:participant id="Participant_Document" name="document-generation" processRef="Process_Document" />
+    <bpmn:participant id="Participant_Notification" name="notification-service" processRef="Process_Notification" />
+    <bpmn:participant id="Participant_PatientService" name="patient-service" processRef="Process_PatientService" />
+    <bpmn:messageFlow id="MF_Agent_Summary_Appt" name="PreConsultationSummaryGenerated" sourceRef="Send_PreConsultationSummaryGenerated" targetRef="Receive_PreConsultationSummaryGenerated" />
+    <bpmn:messageFlow id="MF_Agent_Summary_Cons" name="PreConsultationSummaryGenerated" sourceRef="Send_PreConsultationSummaryGenerated" targetRef="Receive_PreConsultationSummary_Consultation" />
+    <bpmn:messageFlow id="MF_Appt_CheckAvailability" name="CheckProfessionalAvailability" sourceRef="Send_CheckAvailability" targetRef="Receive_CheckAvailability" />
+    <bpmn:messageFlow id="MF_Prof_AvailabilityResult" name="ProfessionalAvailabilityResult" sourceRef="Send_AvailabilityResult" targetRef="Receive_AvailabilityResult" />
+    <bpmn:messageFlow id="MF_Appt_Created_Notification" name="AppointmentCreated" sourceRef="Send_AppointmentCreated" targetRef="Receive_AppointmentCreated_Notification" />
+    <bpmn:messageFlow id="MF_Appt_Created_PatientService" name="AppointmentCreated" sourceRef="Send_AppointmentCreated" targetRef="Receive_AppointmentCreated_PatientService" />
+    <bpmn:messageFlow id="MF_Consultation_Completed" name="ConsultationCompleted" sourceRef="Send_ConsultationCompleted" targetRef="Receive_ConsultationCompleted" />
+    <bpmn:messageFlow id="MF_Consultation_PostSummary" name="PostConsultationSummaryGenerated" sourceRef="End_DocumentGenerated" targetRef="Send_PostConsultationSummaryGenerated" />
+    <bpmn:messageFlow id="MF_Consultation_Referral_Notification" name="ReferralCreated" sourceRef="Send_ReferralCreated" targetRef="Receive_ReferralCreated_Notification" />
+    <bpmn:messageFlow id="MF_Document_PdfGenerated_PatientService" name="ConsultationPdfGenerated" sourceRef="Send_ConsultationPdfGenerated" targetRef="Receive_ConsultationPdfGenerated_PatientService" />
+  </bpmn:collaboration>
+  <bpmn:message id="Message_PreconsultationStarted" name="PreconsultationStarted" />
+  <bpmn:message id="Message_PreConsultationSummaryGenerated" name="PreConsultationSummaryGenerated" />
+  <bpmn:message id="Message_CheckProfessionalAvailability" name="CheckProfessionalAvailability" />
+  <bpmn:message id="Message_ProfessionalAvailabilityResult" name="ProfessionalAvailabilityResult" />
+  <bpmn:message id="Message_AppointmentCreated" name="AppointmentCreated" />
+  <bpmn:message id="Message_StartMedicalConsultation" name="StartMedicalConsultation" />
+  <bpmn:message id="Message_ConsultationCompleted" name="ConsultationCompleted" />
+  <bpmn:message id="Message_PostConsultationSummaryGenerated" name="PostConsultationSummaryGenerated" />
+  <bpmn:message id="Message_ReferralCreated" name="ReferralCreated" />
+  <bpmn:message id="Message_ConsultationPdfGenerated" name="ConsultationPdfGenerated" />
+  <bpmn:message id="Message_AppointmentCancelled" name="AppointmentCancelled" />
+  <bpmn:message id="Message_AppointmentRescheduled" name="AppointmentRescheduled" />
+  <bpmn:message id="Message_AppointmentNoShow" name="AppointmentNoShow" />
+  <bpmn:message id="Message_ManualRetryCommand" name="ManualRetryCommand" />
+  <bpmn:error id="Error_PDFGeneration" name="PDFGenerationError" errorCode="PDF_GEN_ERROR" />
+  <bpmn:process id="Process_Agent" name="intelligent-agent" isExecutable="true" camunda:historyTimeToLive="180">
+    <bpmn:endEvent id="End_Agent" name="Summary emitted">
+      <bpmn:incoming>Flow_Agent_04</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sendTask id="Send_PreConsultationSummaryGenerated" name="Emit PreConsultationSummaryGenerated" camunda:type="external" camunda:topic="agent.emit-preconsultation-summary">
+      <bpmn:incoming>Flow_Agent_03</bpmn:incoming>
+      <bpmn:outgoing>Flow_Agent_04</bpmn:outgoing>
+    </bpmn:sendTask>
+    <bpmn:serviceTask id="Task_GenerarSummary" name="Generate PreConsultationSummary" camunda:type="external" camunda:topic="agent.generate-summary">
+      <bpmn:incoming>Flow_Agent_02</bpmn:incoming>
+      <bpmn:outgoing>Flow_Agent_03</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="Task_ProcesarPreconsulta" name="Process preconsultation" camunda:type="external" camunda:topic="agent.process-preconsultation">
+      <bpmn:incoming>Flow_Agent_01</bpmn:incoming>
+      <bpmn:outgoing>Flow_Agent_02</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:startEvent id="Receive_PreconsultationStarted" name="Receive PreconsultationStarted">
+      <bpmn:outgoing>Flow_Agent_01</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MsgDef_PreconsultationStarted" messageRef="Message_PreconsultationStarted" />
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="Flow_Agent_04" sourceRef="Send_PreConsultationSummaryGenerated" targetRef="End_Agent" />
+    <bpmn:sequenceFlow id="Flow_Agent_03" sourceRef="Task_GenerarSummary" targetRef="Send_PreConsultationSummaryGenerated" />
+    <bpmn:sequenceFlow id="Flow_Agent_02" sourceRef="Task_ProcesarPreconsulta" targetRef="Task_GenerarSummary" />
+    <bpmn:sequenceFlow id="Flow_Agent_01" sourceRef="Receive_PreconsultationStarted" targetRef="Task_ProcesarPreconsulta" />
+  </bpmn:process>
+  <bpmn:process id="Process_Appointment" name="appointment-scheduling" isExecutable="true" camunda:historyTimeToLive="180">
+    <bpmn:sendTask id="Send_CheckAvailability" name="Emit CheckProfessionalAvailability" camunda:type="external" camunda:topic="appt.check-availability">
+      <bpmn:incoming>Flow_Appt_01</bpmn:incoming>
+      <bpmn:incoming>Flow_Appt_No</bpmn:incoming>
+      <bpmn:outgoing>Flow_Appt_02</bpmn:outgoing>
+    </bpmn:sendTask>
+    <bpmn:intermediateCatchEvent id="Receive_AvailabilityResult" name="Receive ProfessionalAvailabilityResult">
+      <bpmn:incoming>Flow_Appt_02</bpmn:incoming>
+      <bpmn:outgoing>Flow_Appt_03</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MsgDef_AvailabilityResult" messageRef="Message_ProfessionalAvailabilityResult" />
+    </bpmn:intermediateCatchEvent>
+    <bpmn:exclusiveGateway id="Gateway_SlotDisponible" name="Slot available?">
+      <bpmn:incoming>Flow_Appt_03</bpmn:incoming>
+      <bpmn:outgoing>Flow_Appt_Yes</bpmn:outgoing>
+      <bpmn:outgoing>Flow_Appt_No</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:serviceTask id="Task_CrearCita" name="Create appointment with summary" camunda:type="external" camunda:topic="appt.create">
+      <bpmn:incoming>Flow_Appt_Yes</bpmn:incoming>
+      <bpmn:outgoing>Flow_Appt_04</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sendTask id="Send_AppointmentCreated" name="Emit AppointmentCreated" camunda:type="external" camunda:topic="appt.emit-created">
+      <bpmn:incoming>Flow_Appt_04</bpmn:incoming>
+      <bpmn:outgoing>Flow_Appt_05</bpmn:outgoing>
+    </bpmn:sendTask>
+    <bpmn:endEvent id="End_AppointmentCompleted" name="Appointment completed">
+      <bpmn:incoming>Flow_Appt_08</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sendTask id="Send_AppointmentCompleted" name="Emit AppointmentCompleted" camunda:type="external" camunda:topic="appt.emit-completed">
+      <bpmn:incoming>Flow_Appt_07</bpmn:incoming>
+      <bpmn:outgoing>Flow_Appt_08</bpmn:outgoing>
+    </bpmn:sendTask>
+    <bpmn:serviceTask id="Task_ActualizarStatus" name="Status = COMPLETED" camunda:type="external" camunda:topic="appt.update-status">
+      <bpmn:incoming>Flow_Appt_06</bpmn:incoming>
+      <bpmn:outgoing>Flow_Appt_07</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:intermediateCatchEvent id="Receive_ConsultationCompleted" name="Receive ConsultationCompleted">
+      <bpmn:incoming>Flow_Appt_Outcome_Completed</bpmn:incoming>
+      <bpmn:outgoing>Flow_Appt_06</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MsgDef_ConsultationCompleted" messageRef="Message_ConsultationCompleted" />
+    </bpmn:intermediateCatchEvent>
+    <bpmn:eventBasedGateway id="Gateway_AppointmentOutcome" name="What happens?">
+      <bpmn:incoming>Flow_Appt_05</bpmn:incoming>
+      <bpmn:outgoing>Flow_Appt_Outcome_Completed</bpmn:outgoing>
+      <bpmn:outgoing>Flow_Appt_Outcome_Cancelled</bpmn:outgoing>
+      <bpmn:outgoing>Flow_Appt_Outcome_Rescheduled</bpmn:outgoing>
+      <bpmn:outgoing>Flow_Appt_Outcome_NoShow</bpmn:outgoing>
+    </bpmn:eventBasedGateway>
+    <bpmn:intermediateCatchEvent id="Receive_AppointmentCancelled" name="Receive AppointmentCancelled">
+      <bpmn:incoming>Flow_Appt_Outcome_Cancelled</bpmn:incoming>
+      <bpmn:outgoing>Flow_Appt_Cancelled</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MsgDef_AppointmentCancelled" messageRef="Message_AppointmentCancelled" />
+    </bpmn:intermediateCatchEvent>
+    <bpmn:endEvent id="End_AppointmentCancelled" name="Appointment cancelled">
+      <bpmn:incoming>Flow_Appt_Cancelled</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:intermediateCatchEvent id="Receive_AppointmentRescheduled" name="Receive AppointmentRescheduled">
+      <bpmn:incoming>Flow_Appt_Outcome_Rescheduled</bpmn:incoming>
+      <bpmn:outgoing>Flow_Appt_Rescheduled</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MsgDef_AppointmentRescheduled" messageRef="Message_AppointmentRescheduled" />
+    </bpmn:intermediateCatchEvent>
+    <bpmn:endEvent id="End_AppointmentRescheduled" name="Appointment rescheduled">
+      <bpmn:incoming>Flow_Appt_Rescheduled</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:intermediateCatchEvent id="Receive_AppointmentNoShow" name="Receive AppointmentNoShow">
+      <bpmn:incoming>Flow_Appt_Outcome_NoShow</bpmn:incoming>
+      <bpmn:outgoing>Flow_Appt_NoShow</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MsgDef_AppointmentNoShow" messageRef="Message_AppointmentNoShow" />
+    </bpmn:intermediateCatchEvent>
+    <bpmn:endEvent id="End_AppointmentNoShow" name="Appointment no-show">
+      <bpmn:incoming>Flow_Appt_NoShow</bpmn:incoming>
+      <bpmn:incoming>Flow_Appt_NoShowTimeout</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:boundaryEvent id="Boundary_NoShowTimer" name="No-show (30 min from schedule)" attachedToRef="Receive_ConsultationCompleted">
+      <bpmn:outgoing>Flow_Appt_NoShowTimeout</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="Timer_NoShow">
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">PT30M</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+    <bpmn:sequenceFlow id="Flow_Appt_01" sourceRef="Receive_PreConsultationSummaryGenerated" targetRef="Send_CheckAvailability" />
+    <bpmn:sequenceFlow id="Flow_Appt_No" name="No" sourceRef="Gateway_SlotDisponible" targetRef="Send_CheckAvailability">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${!slotAvailable}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_Appt_02" sourceRef="Send_CheckAvailability" targetRef="Receive_AvailabilityResult" />
+    <bpmn:sequenceFlow id="Flow_Appt_03" sourceRef="Receive_AvailabilityResult" targetRef="Gateway_SlotDisponible" />
+    <bpmn:sequenceFlow id="Flow_Appt_NoSlotEnd" sourceRef="Boundary_NoSlotLimit" targetRef="EndError_NoSlot" />
+    <bpmn:sequenceFlow id="Flow_Appt_Yes" name="Yes" sourceRef="Gateway_SlotDisponible" targetRef="Task_CrearCita">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${slotAvailable}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_Appt_04" sourceRef="Task_CrearCita" targetRef="Send_AppointmentCreated" />
+    <bpmn:sequenceFlow id="Flow_Appt_05" sourceRef="Send_AppointmentCreated" targetRef="Gateway_AppointmentOutcome" />
+    <bpmn:sequenceFlow id="Flow_Appt_08" sourceRef="Send_AppointmentCompleted" targetRef="End_AppointmentCompleted" />
+    <bpmn:sequenceFlow id="Flow_Appt_07" sourceRef="Task_ActualizarStatus" targetRef="Send_AppointmentCompleted" />
+    <bpmn:sequenceFlow id="Flow_Appt_06" sourceRef="Receive_ConsultationCompleted" targetRef="Task_ActualizarStatus" />
+    <bpmn:sequenceFlow id="Flow_Appt_Outcome_Completed" sourceRef="Gateway_AppointmentOutcome" targetRef="Receive_ConsultationCompleted" />
+    <bpmn:sequenceFlow id="Flow_Appt_Outcome_Cancelled" sourceRef="Gateway_AppointmentOutcome" targetRef="Receive_AppointmentCancelled" />
+    <bpmn:sequenceFlow id="Flow_Appt_Outcome_Rescheduled" sourceRef="Gateway_AppointmentOutcome" targetRef="Receive_AppointmentRescheduled" />
+    <bpmn:sequenceFlow id="Flow_Appt_Outcome_NoShow" sourceRef="Gateway_AppointmentOutcome" targetRef="Receive_AppointmentNoShow" />
+    <bpmn:sequenceFlow id="Flow_Appt_Cancelled" sourceRef="Receive_AppointmentCancelled" targetRef="End_AppointmentCancelled" />
+    <bpmn:sequenceFlow id="Flow_Appt_Rescheduled" sourceRef="Receive_AppointmentRescheduled" targetRef="End_AppointmentRescheduled" />
+    <bpmn:sequenceFlow id="Flow_Appt_NoShow" sourceRef="Receive_AppointmentNoShow" targetRef="End_AppointmentNoShow" />
+    <bpmn:sequenceFlow id="Flow_Appt_NoShowTimeout" sourceRef="Boundary_NoShowTimer" targetRef="End_AppointmentNoShow" />
+    <bpmn:endEvent id="EndError_NoSlot" name="No slot available (timeout)">
+      <bpmn:incoming>Flow_Appt_NoSlotEnd</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:intermediateCatchEvent id="Boundary_NoSlotLimit" name="No slot (5 min from request)">
+      <bpmn:outgoing>Flow_Appt_NoSlotEnd</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="TimerEventDefinition_1um24ua">
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">PT5M</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:intermediateCatchEvent>
+    <bpmn:startEvent id="Receive_PreConsultationSummaryGenerated" name="Receive PreConsultationSummaryGenerated">
+      <bpmn:outgoing>Flow_Appt_01</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MsgDef_PreSummary_Appt" messageRef="Message_PreConsultationSummaryGenerated" />
+    </bpmn:startEvent>
+  </bpmn:process>
+  <bpmn:process id="Process_Consultation" name="medical-consultation" isExecutable="true" camunda:historyTimeToLive="180">
+    <bpmn:startEvent id="Receive_StartMedicalConsultation" name="Receive StartMedicalConsultation">
+      <bpmn:outgoing>Flow_Cons_01</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MsgDef_StartMedicalConsultation" messageRef="Message_StartMedicalConsultation" />
+    </bpmn:startEvent>
+    <bpmn:intermediateCatchEvent id="Boundary_StartNoShow" name="Not started (15 min from start)">
+      <bpmn:outgoing>Flow_Cons_NotStarted</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="TimerEventDefinition_1n4vkrx">
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">PT15M</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:intermediateCatchEvent>
+    <bpmn:endEvent id="End_Consultation" name="Consultation finalized">
+      <bpmn:incoming>Flow_Cons_07</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sendTask id="Send_PostConsultationSummaryGenerated" name="Emit PostConsultationSummaryGenerated" camunda:type="external" camunda:topic="consultation.emit-post-summary">
+      <bpmn:incoming>Flow_Cons_06</bpmn:incoming>
+      <bpmn:outgoing>Flow_Cons_07</bpmn:outgoing>
+    </bpmn:sendTask>
+    <bpmn:serviceTask id="Task_GenerarPostSummary" name="Generate PostConsultationSummary" camunda:type="external" camunda:topic="consultation.generate-post-summary">
+      <bpmn:incoming>Flow_Cons_05</bpmn:incoming>
+      <bpmn:outgoing>Flow_Cons_06</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sendTask id="Send_ConsultationCompleted" name="Emit ConsultationCompleted" camunda:type="external" camunda:topic="consultation.emit-completed">
+      <bpmn:incoming>Flow_Cons_04</bpmn:incoming>
+      <bpmn:outgoing>Flow_Cons_05</bpmn:outgoing>
+    </bpmn:sendTask>
+    <bpmn:sequenceFlow id="Flow_Cons_01" sourceRef="Receive_StartMedicalConsultation" targetRef="Receive_PreConsultationSummary_Consultation" />
+    <bpmn:sequenceFlow id="Flow_Cons_PreSummary" sourceRef="Receive_PreConsultationSummary_Consultation" targetRef="Task_RegistrarDatos" />
+    <bpmn:sequenceFlow id="Flow_Cons_02" sourceRef="Task_RegistrarDatos" targetRef="Gateway_Remision" />
+    <bpmn:sequenceFlow id="Flow_Cons_Yes" name="Yes" sourceRef="Gateway_Remision" targetRef="Task_RegistrarRemision">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${requiresReferral}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_Cons_No" name="No" sourceRef="Gateway_Remision" targetRef="Task_FinalizarConsulta">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${!requiresReferral}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_Cons_03" sourceRef="Task_RegistrarRemision" targetRef="Send_ReferralCreated" />
+    <bpmn:sequenceFlow id="Flow_Cons_03b" sourceRef="Send_ReferralCreated" targetRef="Task_FinalizarConsulta" />
+    <bpmn:sequenceFlow id="Flow_Cons_04" sourceRef="Task_FinalizarConsulta" targetRef="Send_ConsultationCompleted" />
+    <bpmn:sequenceFlow id="Flow_Cons_NotStarted" sourceRef="Boundary_StartNoShow" targetRef="End_ConsultationNotStarted" />
+    <bpmn:sequenceFlow id="Flow_Cons_07" sourceRef="Send_PostConsultationSummaryGenerated" targetRef="End_Consultation" />
+    <bpmn:sequenceFlow id="Flow_Cons_06" sourceRef="Task_GenerarPostSummary" targetRef="Send_PostConsultationSummaryGenerated" />
+    <bpmn:sequenceFlow id="Flow_Cons_05" sourceRef="Send_ConsultationCompleted" targetRef="Task_GenerarPostSummary" />
+    <bpmn:userTask id="Task_RegistrarRemision" name="Record referral" camunda:candidateGroups="medical-staff">
+      <bpmn:incoming>Flow_Cons_Yes</bpmn:incoming>
+      <bpmn:outgoing>Flow_Cons_03</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:sendTask id="Send_ReferralCreated" name="Emit ReferralCreated" camunda:type="external" camunda:topic="consultation.emit-referral">
+      <bpmn:incoming>Flow_Cons_03</bpmn:incoming>
+      <bpmn:outgoing>Flow_Cons_03b</bpmn:outgoing>
+    </bpmn:sendTask>
+    <bpmn:userTask id="Task_FinalizarConsulta" name="Finalize consultation" camunda:candidateGroups="medical-staff">
+      <bpmn:incoming>Flow_Cons_No</bpmn:incoming>
+      <bpmn:incoming>Flow_Cons_03b</bpmn:incoming>
+      <bpmn:outgoing>Flow_Cons_04</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:exclusiveGateway id="Gateway_Remision" name="Referral?">
+      <bpmn:incoming>Flow_Cons_02</bpmn:incoming>
+      <bpmn:outgoing>Flow_Cons_Yes</bpmn:outgoing>
+      <bpmn:outgoing>Flow_Cons_No</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:userTask id="Task_RegistrarDatos" name="Record clinical data" camunda:candidateGroups="medical-staff">
+      <bpmn:incoming>Flow_Cons_PreSummary</bpmn:incoming>
+      <bpmn:outgoing>Flow_Cons_02</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:intermediateCatchEvent id="Receive_PreConsultationSummary_Consultation" name="Receive PreConsultationSummaryGenerated">
+      <bpmn:incoming>Flow_Cons_01</bpmn:incoming>
+      <bpmn:outgoing>Flow_Cons_PreSummary</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MsgDef_PreSummary_Cons" messageRef="Message_PreConsultationSummaryGenerated" />
+    </bpmn:intermediateCatchEvent>
+    <bpmn:endEvent id="End_ConsultationNotStarted" name="Consultation not started">
+      <bpmn:incoming>Flow_Cons_NotStarted</bpmn:incoming>
+    </bpmn:endEvent>
+  </bpmn:process>
+  <bpmn:process id="Process_Document" name="document-generation" isExecutable="true" camunda:historyTimeToLive="180">
+    <bpmn:sequenceFlow id="Flow_Doc_01" sourceRef="Receive_PostConsultationSummaryGenerated" targetRef="Task_CrearPENDING" />
+    <bpmn:sequenceFlow id="Flow_Doc_02" sourceRef="Task_CrearPENDING" targetRef="Task_GenerarPDF" />
+    <bpmn:sequenceFlow id="Flow_Doc_RetryLoop" name="&#60; 3" sourceRef="Gateway_RetryLimit" targetRef="Task_GenerarPDF">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${retry_count &lt; 3}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_Doc_03" sourceRef="Task_GenerarPDF" targetRef="Gateway_PDFOK" />
+    <bpmn:sequenceFlow id="Flow_Doc_Yes" name="Yes" sourceRef="Gateway_PDFOK" targetRef="Task_GuardarBinario">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${pdfGenerated}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_Doc_No" name="No" sourceRef="Gateway_PDFOK" targetRef="Task_MarcarERROR">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${!pdfGenerated}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_Doc_04" sourceRef="Task_GuardarBinario" targetRef="Task_ActualizarAVAILABLE" />
+    <bpmn:sequenceFlow id="Flow_Doc_05" sourceRef="Task_ActualizarAVAILABLE" targetRef="Send_ConsultationPdfGenerated" />
+    <bpmn:sequenceFlow id="Flow_Doc_06" sourceRef="Send_ConsultationPdfGenerated" targetRef="End_DocumentGenerated" />
+    <bpmn:sequenceFlow id="Flow_Doc_Timeout" sourceRef="Boundary_PDFTimeout" targetRef="Task_MarcarERROR" />
+    <bpmn:sequenceFlow id="Flow_Doc_Error" sourceRef="Boundary_PDFError" targetRef="Task_MarcarERROR" />
+    <bpmn:sequenceFlow id="Flow_Doc_07" sourceRef="Task_MarcarERROR" targetRef="Gateway_RetryLimit" />
+    <bpmn:sequenceFlow id="Flow_Doc_ManualRetry" sourceRef="Receive_ManualRetry" targetRef="Gateway_RetryLimit" />
+    <bpmn:sequenceFlow id="Flow_Doc_MaxRetries" name="&#62;= 3" sourceRef="Gateway_RetryLimit" targetRef="EndError_PDF">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${retry_count &gt;= 3}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:endEvent id="End_DocumentGenerated" name="Document generated">
+      <bpmn:incoming>Flow_Doc_06</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sendTask id="Send_ConsultationPdfGenerated" name="Emit ConsultationPdfGenerated" camunda:type="external" camunda:topic="doc.emit-pdf-generated">
+      <bpmn:incoming>Flow_Doc_05</bpmn:incoming>
+      <bpmn:outgoing>Flow_Doc_06</bpmn:outgoing>
+    </bpmn:sendTask>
+    <bpmn:serviceTask id="Task_ActualizarAVAILABLE" name="Status = AVAILABLE" camunda:type="external" camunda:topic="doc.update-available">
+      <bpmn:incoming>Flow_Doc_04</bpmn:incoming>
+      <bpmn:outgoing>Flow_Doc_05</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:endEvent id="EndError_PDF" name="Document ERROR">
+      <bpmn:incoming>Flow_Doc_MaxRetries</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:serviceTask id="Task_MarcarERROR" name="Mark ERROR" camunda:type="external" camunda:topic="doc.mark-error">
+      <bpmn:incoming>Flow_Doc_No</bpmn:incoming>
+      <bpmn:incoming>Flow_Doc_Timeout</bpmn:incoming>
+      <bpmn:incoming>Flow_Doc_Error</bpmn:incoming>
+      <bpmn:outgoing>Flow_Doc_07</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:exclusiveGateway id="Gateway_RetryLimit" name="retry_count &#60; 3?">
+      <bpmn:incoming>Flow_Doc_07</bpmn:incoming>
+      <bpmn:incoming>Flow_Doc_ManualRetry</bpmn:incoming>
+      <bpmn:outgoing>Flow_Doc_RetryLoop</bpmn:outgoing>
+      <bpmn:outgoing>Flow_Doc_MaxRetries</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:serviceTask id="Task_GuardarBinario" name="Save binary to storage" camunda:type="external" camunda:topic="doc.save-binary">
+      <bpmn:incoming>Flow_Doc_Yes</bpmn:incoming>
+      <bpmn:outgoing>Flow_Doc_04</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:exclusiveGateway id="Gateway_PDFOK" name="PDF OK?">
+      <bpmn:incoming>Flow_Doc_03</bpmn:incoming>
+      <bpmn:outgoing>Flow_Doc_Yes</bpmn:outgoing>
+      <bpmn:outgoing>Flow_Doc_No</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:serviceTask id="Task_GenerarPDF" name="Generate PDF (retry_count++)" camunda:type="external" camunda:topic="doc.generate-pdf">
+      <bpmn:incoming>Flow_Doc_02</bpmn:incoming>
+      <bpmn:incoming>Flow_Doc_RetryLoop</bpmn:incoming>
+      <bpmn:outgoing>Flow_Doc_03</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:boundaryEvent id="Boundary_PDFError" name="PDF error" attachedToRef="Task_GenerarPDF">
+      <bpmn:outgoing>Flow_Doc_Error</bpmn:outgoing>
+      <bpmn:errorEventDefinition id="Error_PDFGeneration_Def" errorRef="Error_PDFGeneration" />
+    </bpmn:boundaryEvent>
+    <bpmn:serviceTask id="Task_CrearPENDING" name="Create PENDING record" camunda:type="external" camunda:topic="doc.create-pending">
+      <bpmn:incoming>Flow_Doc_01</bpmn:incoming>
+      <bpmn:outgoing>Flow_Doc_02</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:startEvent id="Receive_PostConsultationSummaryGenerated" name="Receive PostConsultationSummaryGenerated">
+      <bpmn:outgoing>Flow_Doc_01</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MsgDef_PostSummary_Doc" messageRef="Message_PostConsultationSummaryGenerated" />
+    </bpmn:startEvent>
+    <bpmn:boundaryEvent id="Boundary_PDFTimeout" name="PDF timeout (30s)" attachedToRef="Task_GenerarPDF">
+      <bpmn:outgoing>Flow_Doc_Timeout</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="TimerEventDefinition_1iyx7df">
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">PT30S</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+    <bpmn:receiveTask id="Receive_ManualRetry" name="Receive ManualRetryCommand" camunda:type="external" camunda:topic="doc.manual-retry">
+      <bpmn:outgoing>Flow_Doc_ManualRetry</bpmn:outgoing>
+    </bpmn:receiveTask>
+  </bpmn:process>
+  <bpmn:process id="Process_Patient" name="Patient" isExecutable="false">
+    <bpmn:startEvent id="Start_Patient" name="Complete preconsultation">
+      <bpmn:outgoing>Flow_Patient_01</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:endEvent id="End_Patient" name="Preconsultation sent">
+      <bpmn:incoming>Flow_Patient_01</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_Patient_01" sourceRef="Start_Patient" targetRef="End_Patient" />
+  </bpmn:process>
+  <bpmn:process id="Process_Physician" name="Physician" isExecutable="false">
+    <bpmn:startEvent id="Start_Physician" name="Start medical consultation">
+      <bpmn:outgoing>Flow_Physician_01</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:endEvent id="End_Physician" name="Consultation started">
+      <bpmn:incoming>Flow_Physician_01</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_Physician_01" sourceRef="Start_Physician" targetRef="End_Physician" />
+  </bpmn:process>
+  <bpmn:process id="Process_Professional" name="professional-management" isExecutable="false">
+    <bpmn:startEvent id="Receive_CheckAvailability" name="Receive CheckProfessionalAvailability">
+      <bpmn:outgoing>Flow_Prof_01</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MsgDef_CheckAvailability" messageRef="Message_CheckProfessionalAvailability" />
+    </bpmn:startEvent>
+    <bpmn:serviceTask id="Task_ResolverDisponibilidad" name="Resolve professional availability" camunda:type="external" camunda:topic="professional.resolve-availability">
+      <bpmn:incoming>Flow_Prof_01</bpmn:incoming>
+      <bpmn:outgoing>Flow_Prof_02</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sendTask id="Send_AvailabilityResult" name="Emit ProfessionalAvailabilityResult" camunda:type="external" camunda:topic="professional.emit-availability">
+      <bpmn:incoming>Flow_Prof_02</bpmn:incoming>
+      <bpmn:outgoing>Flow_Prof_03</bpmn:outgoing>
+    </bpmn:sendTask>
+    <bpmn:endEvent id="End_Professional" name="Availability answered">
+      <bpmn:incoming>Flow_Prof_03</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_Prof_01" sourceRef="Receive_CheckAvailability" targetRef="Task_ResolverDisponibilidad" />
+    <bpmn:sequenceFlow id="Flow_Prof_02" sourceRef="Task_ResolverDisponibilidad" targetRef="Send_AvailabilityResult" />
+    <bpmn:sequenceFlow id="Flow_Prof_03" sourceRef="Send_AvailabilityResult" targetRef="End_Professional" />
+  </bpmn:process>
+  <bpmn:process id="Process_Notification" name="notification-service" isExecutable="false">
+    <bpmn:sequenceFlow id="Flow_Notif_01" sourceRef="Receive_ReferralCreated_Notification" targetRef="Task_NotificarRemision" />
+    <bpmn:sequenceFlow id="Flow_Notif_01b" sourceRef="Task_NotificarRemision" targetRef="End_Notification_Referral" />
+    <bpmn:sequenceFlow id="Flow_Notif_02" sourceRef="Receive_AppointmentCreated_Notification" targetRef="Task_NotificarCita" />
+    <bpmn:sequenceFlow id="Flow_Notif_02b" sourceRef="Task_NotificarCita" targetRef="End_Notification_Appt" />
+    <bpmn:startEvent id="Receive_ReferralCreated_Notification" name="Receive ReferralCreated">
+      <bpmn:outgoing>Flow_Notif_01</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MsgDef_ReferralCreated_Notif" messageRef="Message_ReferralCreated" />
+    </bpmn:startEvent>
+    <bpmn:serviceTask id="Task_NotificarRemision" name="Send referral notification" camunda:type="external" camunda:topic="notification.send-referral">
+      <bpmn:incoming>Flow_Notif_01</bpmn:incoming>
+      <bpmn:outgoing>Flow_Notif_01b</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:endEvent id="End_Notification_Referral" name="Notification sent">
+      <bpmn:incoming>Flow_Notif_01b</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:startEvent id="Receive_AppointmentCreated_Notification" name="Receive AppointmentCreated">
+      <bpmn:outgoing>Flow_Notif_02</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MsgDef_ApptCreated_Notif" messageRef="Message_AppointmentCreated" />
+    </bpmn:startEvent>
+    <bpmn:serviceTask id="Task_NotificarCita" name="Send appointment notification" camunda:type="external" camunda:topic="notification.send-appointment">
+      <bpmn:incoming>Flow_Notif_02</bpmn:incoming>
+      <bpmn:outgoing>Flow_Notif_02b</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:endEvent id="End_Notification_Appt" name="Notification sent">
+      <bpmn:incoming>Flow_Notif_02b</bpmn:incoming>
+    </bpmn:endEvent>
+  </bpmn:process>
+  <bpmn:process id="Process_PatientService" name="patient-service" isExecutable="false">
+    <bpmn:startEvent id="Receive_AppointmentCreated_PatientService" name="Receive AppointmentCreated">
+      <bpmn:outgoing>Flow_PatSvc_01</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MsgDef_ApptCreated_PatSvc" messageRef="Message_AppointmentCreated" />
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="Flow_PatSvc_01" sourceRef="Receive_AppointmentCreated_PatientService" targetRef="Task_RegistrarCitaPaciente" />
+    <bpmn:sequenceFlow id="Flow_PatSvc_01b" sourceRef="Task_RegistrarCitaPaciente" targetRef="End_PatientService_Appt" />
+    <bpmn:sequenceFlow id="Flow_PatSvc_02" sourceRef="Receive_ConsultationPdfGenerated_PatientService" targetRef="Task_RegistrarPdfPaciente" />
+    <bpmn:sequenceFlow id="Flow_PatSvc_02b" sourceRef="Task_RegistrarPdfPaciente" targetRef="End_PatientService_Pdf" />
+    <bpmn:startEvent id="Receive_ConsultationPdfGenerated_PatientService" name="Receive ConsultationPdfGenerated">
+      <bpmn:outgoing>Flow_PatSvc_02</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MsgDef_PdfGenerated_PatSvc" messageRef="Message_ConsultationPdfGenerated" />
+    </bpmn:startEvent>
+    <bpmn:serviceTask id="Task_RegistrarPdfPaciente" name="Update patient PDF panel" camunda:type="external" camunda:topic="patient.update-pdf">
+      <bpmn:incoming>Flow_PatSvc_02</bpmn:incoming>
+      <bpmn:outgoing>Flow_PatSvc_02b</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:endEvent id="End_PatientService_Pdf" name="PDF registered">
+      <bpmn:incoming>Flow_PatSvc_02b</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:serviceTask id="Task_RegistrarCitaPaciente" name="Update patient appointment panel" camunda:type="external" camunda:topic="patient.update-appointment">
+      <bpmn:incoming>Flow_PatSvc_01</bpmn:incoming>
+      <bpmn:outgoing>Flow_PatSvc_01b</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:endEvent id="End_PatientService_Appt" name="Appointment registered">
+      <bpmn:incoming>Flow_PatSvc_01b</bpmn:incoming>
+    </bpmn:endEvent>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_Core">
+      <bpmndi:BPMNShape id="Participant_Appointment_di" bpmnElement="Participant_Appointment" isHorizontal="true">
+        <dc:Bounds x="160" y="530" width="2440" height="520" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Send_CheckAvailability_di" bpmnElement="Send_CheckAvailability" bioc:stroke="#5b176d" bioc:fill="#e1bee7" color:background-color="#e1bee7" color:border-color="#5b176d">
+        <dc:Bounds x="340" y="698" width="220" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Receive_AvailabilityResult_di" bpmnElement="Receive_AvailabilityResult" bioc:stroke="#0d4372" bioc:fill="#bbdefb" color:background-color="#bbdefb" color:border-color="#0d4372">
+        <dc:Bounds x="670" y="720" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="587" y="682" width="165" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_SlotDisponible_di" bpmnElement="Gateway_SlotDisponible" isMarkerVisible="true" bioc:stroke="#205022" bioc:fill="#c8e6c9" color:background-color="#c8e6c9" color:border-color="#205022">
+        <dc:Bounds x="735" y="713" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="774" y="763" width="72" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_CrearCita_di" bpmnElement="Task_CrearCita" bioc:stroke="#6b3c00" bioc:fill="#ffe0b2" color:background-color="#ffe0b2" color:border-color="#6b3c00">
+        <dc:Bounds x="900" y="698" width="180" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Send_AppointmentCreated_di" bpmnElement="Send_AppointmentCreated" bioc:stroke="#5b176d" bioc:fill="#e1bee7" color:background-color="#e1bee7" color:border-color="#5b176d">
+        <dc:Bounds x="1120" y="698" width="200" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_AppointmentCompleted_di" bpmnElement="End_AppointmentCompleted" bioc:stroke="#831311" bioc:fill="#ffcdd2" color:background-color="#ffcdd2" color:border-color="#831311">
+        <dc:Bounds x="2492" y="720" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2479" y="756" width="62" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Send_AppointmentCompleted_di" bpmnElement="Send_AppointmentCompleted" bioc:stroke="#5b176d" bioc:fill="#e1bee7" color:background-color="#e1bee7" color:border-color="#5b176d">
+        <dc:Bounds x="2220" y="698" width="200" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_ActualizarStatus_di" bpmnElement="Task_ActualizarStatus" bioc:stroke="#6b3c00" bioc:fill="#ffe0b2" color:background-color="#ffe0b2" color:border-color="#6b3c00">
+        <dc:Bounds x="1980" y="698" width="180" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Receive_ConsultationCompleted_di" bpmnElement="Receive_ConsultationCompleted" bioc:stroke="#0d4372" bioc:fill="#bbdefb" color:background-color="#bbdefb" color:border-color="#0d4372">
+        <dc:Bounds x="1872" y="720" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1823" y="682" width="137" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_AppointmentOutcome_di" bpmnElement="Gateway_AppointmentOutcome" isMarkerVisible="true" bioc:stroke="#205022" bioc:fill="#c8e6c9" color:background-color="#c8e6c9" color:border-color="#205022">
+        <dc:Bounds x="1473" y="713" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1459" y="689" width="78" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Receive_AppointmentCancelled_di" bpmnElement="Receive_AppointmentCancelled" bioc:stroke="#0d4372" bioc:fill="#bbdefb" color:background-color="#bbdefb" color:border-color="#0d4372">
+        <dc:Bounds x="1370" y="772" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1345" y="808" width="88" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_AppointmentCancelled_di" bpmnElement="End_AppointmentCancelled" bioc:stroke="#831311" bioc:fill="#ffcdd2" color:background-color="#ffcdd2" color:border-color="#831311">
+        <dc:Bounds x="1672" y="772" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1659" y="826" width="62" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Receive_AppointmentRescheduled_di" bpmnElement="Receive_AppointmentRescheduled" bioc:stroke="#0d4372" bioc:fill="#bbdefb" color:background-color="#bbdefb" color:border-color="#0d4372">
+        <dc:Bounds x="1370" y="862" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1345" y="898" width="87" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_AppointmentRescheduled_di" bpmnElement="End_AppointmentRescheduled" bioc:stroke="#831311" bioc:fill="#ffcdd2" color:background-color="#ffcdd2" color:border-color="#831311">
+        <dc:Bounds x="1672" y="862" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1659" y="904" width="62" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Receive_AppointmentNoShow_di" bpmnElement="Receive_AppointmentNoShow" bioc:stroke="#0d4372" bioc:fill="#bbdefb" color:background-color="#bbdefb" color:border-color="#0d4372">
+        <dc:Bounds x="1370" y="962" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1346" y="998" width="84" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_AppointmentNoShow_di" bpmnElement="End_AppointmentNoShow" bioc:stroke="#831311" bioc:fill="#ffcdd2" color:background-color="#ffcdd2" color:border-color="#831311">
+        <dc:Bounds x="1492" y="962" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1467" y="1004" width="81" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndError_NoSlot_di" bpmnElement="EndError_NoSlot" bioc:stroke="#831311" bioc:fill="#ffcdd2" color:background-color="#ffcdd2" color:border-color="#831311">
+        <dc:Bounds x="642" y="872" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="620" y="908" width="81" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1vr0e7h_di" bpmnElement="Boundary_NoSlotLimit" bioc:stroke="#831311" bioc:fill="#ffcdd2" color:background-color="#ffcdd2" color:border-color="#831311">
+        <dc:Bounds x="642" y="756" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="566" y="750" width="68" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Receive_PreConsultationSummaryGenerated_di" bpmnElement="Receive_PreConsultationSummaryGenerated" bioc:stroke="#0d4372" bioc:fill="#bbdefb" color:background-color="#bbdefb" color:border-color="#0d4372">
+        <dc:Bounds x="222" y="720" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="196" y="773" width="87" height="53" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Boundary_NoShowTimer_di" bpmnElement="Boundary_NoShowTimer" bioc:stroke="#831311" bioc:fill="#ffcdd2" color:background-color="#ffcdd2" color:border-color="#831311">
+        <dc:Bounds x="1854" y="756" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1760" y="760" width="84" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_Appt_01_di" bpmnElement="Flow_Appt_01">
+        <di:waypoint x="258" y="738" />
+        <di:waypoint x="340" y="738" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Appt_No_di" bpmnElement="Flow_Appt_No">
+        <di:waypoint x="760" y="763" />
+        <di:waypoint x="760" y="810" />
+        <di:waypoint x="450" y="810" />
+        <di:waypoint x="450" y="778" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="512" y="793" width="15" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Appt_02_di" bpmnElement="Flow_Appt_02">
+        <di:waypoint x="560" y="738" />
+        <di:waypoint x="670" y="738" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Appt_03_di" bpmnElement="Flow_Appt_03">
+        <di:waypoint x="706" y="738" />
+        <di:waypoint x="735" y="738" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Appt_NoSlotEnd_di" bpmnElement="Flow_Appt_NoSlotEnd">
+        <di:waypoint x="660" y="792" />
+        <di:waypoint x="660" y="872" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Appt_Yes_di" bpmnElement="Flow_Appt_Yes">
+        <di:waypoint x="785" y="738" />
+        <di:waypoint x="900" y="738" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="834" y="713" width="18" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Appt_04_di" bpmnElement="Flow_Appt_04">
+        <di:waypoint x="1080" y="738" />
+        <di:waypoint x="1120" y="738" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Appt_05_di" bpmnElement="Flow_Appt_05">
+        <di:waypoint x="1320" y="738" />
+        <di:waypoint x="1473" y="738" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Appt_08_di" bpmnElement="Flow_Appt_08">
+        <di:waypoint x="2420" y="738" />
+        <di:waypoint x="2492" y="738" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Appt_07_di" bpmnElement="Flow_Appt_07">
+        <di:waypoint x="2160" y="738" />
+        <di:waypoint x="2220" y="738" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Appt_06_di" bpmnElement="Flow_Appt_06">
+        <di:waypoint x="1908" y="738" />
+        <di:waypoint x="1980" y="738" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Appt_Outcome_Completed_di" bpmnElement="Flow_Appt_Outcome_Completed">
+        <di:waypoint x="1523" y="738" />
+        <di:waypoint x="1872" y="738" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Appt_Outcome_Cancelled_di" bpmnElement="Flow_Appt_Outcome_Cancelled">
+        <di:waypoint x="1498" y="763" />
+        <di:waypoint x="1498" y="772" />
+        <di:waypoint x="1388" y="772" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Appt_Outcome_Rescheduled_di" bpmnElement="Flow_Appt_Outcome_Rescheduled">
+        <di:waypoint x="1498" y="763" />
+        <di:waypoint x="1498" y="862" />
+        <di:waypoint x="1388" y="862" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Appt_Outcome_NoShow_di" bpmnElement="Flow_Appt_Outcome_NoShow">
+        <di:waypoint x="1498" y="763" />
+        <di:waypoint x="1498" y="962" />
+        <di:waypoint x="1388" y="962" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Appt_Cancelled_di" bpmnElement="Flow_Appt_Cancelled">
+        <di:waypoint x="1406" y="790" />
+        <di:waypoint x="1672" y="790" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Appt_Rescheduled_di" bpmnElement="Flow_Appt_Rescheduled">
+        <di:waypoint x="1406" y="880" />
+        <di:waypoint x="1672" y="880" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Appt_NoShow_di" bpmnElement="Flow_Appt_NoShow">
+        <di:waypoint x="1406" y="980" />
+        <di:waypoint x="1492" y="980" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Appt_NoShowTimeout_di" bpmnElement="Flow_Appt_NoShowTimeout">
+        <di:waypoint x="1872" y="792" />
+        <di:waypoint x="1872" y="980" />
+        <di:waypoint x="1528" y="980" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Participant_Notification_di" bpmnElement="Participant_Notification" isHorizontal="true">
+        <dc:Bounds x="150" y="2290" width="2460" height="200" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Receive_ReferralCreated_Notification_di" bpmnElement="Receive_ReferralCreated_Notification" bioc:stroke="#0d4372" bioc:fill="#bbdefb" color:background-color="#bbdefb" color:border-color="#0d4372">
+        <dc:Bounds x="220" y="2312" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="200" y="2356" width="79" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_NotificarRemision_di" bpmnElement="Task_NotificarRemision" bioc:stroke="#6b3c00" bioc:fill="#ffe0b2" color:background-color="#ffe0b2" color:border-color="#6b3c00">
+        <dc:Bounds x="780" y="2300" width="180" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_Notification_Referral_di" bpmnElement="End_Notification_Referral" bioc:stroke="#831311" bioc:fill="#ffcdd2" color:background-color="#ffcdd2" color:border-color="#831311">
+        <dc:Bounds x="1072" y="2312" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1051" y="2355" width="79" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Receive_AppointmentCreated_Notification_di" bpmnElement="Receive_AppointmentCreated_Notification" bioc:stroke="#0d4372" bioc:fill="#bbdefb" color:background-color="#bbdefb" color:border-color="#0d4372">
+        <dc:Bounds x="220" y="2412" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="195" y="2448" width="86" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_NotificarCita_di" bpmnElement="Task_NotificarCita" bioc:stroke="#6b3c00" bioc:fill="#ffe0b2" color:background-color="#ffe0b2" color:border-color="#6b3c00">
+        <dc:Bounds x="780" y="2400" width="180" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_Notification_Appt_di" bpmnElement="End_Notification_Appt" bioc:stroke="#831311" bioc:fill="#ffcdd2" color:background-color="#ffcdd2" color:border-color="#831311">
+        <dc:Bounds x="1072" y="2412" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1051" y="2448" width="79" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_Notif_01_di" bpmnElement="Flow_Notif_01">
+        <di:waypoint x="256" y="2330" />
+        <di:waypoint x="780" y="2330" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Notif_01b_di" bpmnElement="Flow_Notif_01b">
+        <di:waypoint x="960" y="2330" />
+        <di:waypoint x="1072" y="2330" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Notif_02_di" bpmnElement="Flow_Notif_02">
+        <di:waypoint x="256" y="2430" />
+        <di:waypoint x="780" y="2430" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Notif_02b_di" bpmnElement="Flow_Notif_02b">
+        <di:waypoint x="960" y="2430" />
+        <di:waypoint x="1072" y="2430" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Participant_Document_di" bpmnElement="Participant_Document" isHorizontal="true">
+        <dc:Bounds x="160" y="1890" width="2440" height="320" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_DocumentGenerated_di" bpmnElement="End_DocumentGenerated" bioc:stroke="#831311" bioc:fill="#ffcdd2" color:background-color="#ffcdd2" color:border-color="#831311">
+        <dc:Bounds x="2462" y="1962" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2455" y="1998" width="51" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Send_ConsultationPdfGenerated_di" bpmnElement="Send_ConsultationPdfGenerated" bioc:stroke="#5b176d" bioc:fill="#e1bee7" color:background-color="#e1bee7" color:border-color="#5b176d">
+        <dc:Bounds x="2110" y="1940" width="220" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_ActualizarAVAILABLE_di" bpmnElement="Task_ActualizarAVAILABLE" bioc:stroke="#6b3c00" bioc:fill="#ffe0b2" color:background-color="#ffe0b2" color:border-color="#6b3c00">
+        <dc:Bounds x="1840" y="1940" width="180" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndError_PDF_di" bpmnElement="EndError_PDF" bioc:stroke="#831311" bioc:fill="#ffcdd2" color:background-color="#ffcdd2" color:border-color="#831311">
+        <dc:Bounds x="1882" y="2062" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1875" y="2098" width="51" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_MarcarERROR_di" bpmnElement="Task_MarcarERROR" bioc:stroke="#6b3c00" bioc:fill="#ffe0b2" color:background-color="#ffe0b2" color:border-color="#6b3c00">
+        <dc:Bounds x="925" y="2040" width="190" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_RetryLimit_di" bpmnElement="Gateway_RetryLimit" isMarkerVisible="true" bioc:stroke="#205022" bioc:fill="#c8e6c9" color:background-color="#c8e6c9" color:border-color="#205022">
+        <dc:Bounds x="1375" y="2055" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1360" y="2123" width="80" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_GuardarBinario_di" bpmnElement="Task_GuardarBinario" bioc:stroke="#6b3c00" bioc:fill="#ffe0b2" color:background-color="#ffe0b2" color:border-color="#6b3c00">
+        <dc:Bounds x="1535" y="1940" width="190" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_PDFOK_di" bpmnElement="Gateway_PDFOK" isMarkerVisible="true" bioc:stroke="#205022" bioc:fill="#c8e6c9" color:background-color="#c8e6c9" color:border-color="#205022">
+        <dc:Bounds x="830" y="1955" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="831" y="1931" width="48" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_GenerarPDF_di" bpmnElement="Task_GenerarPDF" bioc:stroke="#6b3c00" bioc:fill="#ffe0b2" color:background-color="#ffe0b2" color:border-color="#6b3c00">
+        <dc:Bounds x="580" y="1940" width="180" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_CrearPENDING_di" bpmnElement="Task_CrearPENDING" bioc:stroke="#6b3c00" bioc:fill="#ffe0b2" color:background-color="#ffe0b2" color:border-color="#6b3c00">
+        <dc:Bounds x="340" y="1940" width="180" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Receive_PostConsultationSummaryGenerated_di" bpmnElement="Receive_PostConsultationSummaryGenerated" bioc:stroke="#0d4372" bioc:fill="#bbdefb" color:background-color="#bbdefb" color:border-color="#0d4372">
+        <dc:Bounds x="230" y="1962" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="203" y="1998" width="90" height="53" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Receive_ManualRetry_di" bpmnElement="Receive_ManualRetry" bioc:stroke="#5b176d" bioc:fill="#e1bee7" color:background-color="#e1bee7" color:border-color="#5b176d">
+        <dc:Bounds x="1520" y="2115" width="180" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Boundary_PDFError_di" bpmnElement="Boundary_PDFError" bioc:stroke="#831311" bioc:fill="#ffcdd2" color:background-color="#ffcdd2" color:border-color="#831311">
+        <dc:Bounds x="720" y="2000" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="745" y="2043" width="49" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1gaz223_di" bpmnElement="Boundary_PDFTimeout" bioc:stroke="#831311" bioc:fill="#ffcdd2" color:background-color="#ffcdd2" color:border-color="#831311">
+        <dc:Bounds x="612" y="2002" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="533" y="2043" width="90" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_Doc_01_di" bpmnElement="Flow_Doc_01">
+        <di:waypoint x="266" y="1980" />
+        <di:waypoint x="340" y="1980" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Doc_02_di" bpmnElement="Flow_Doc_02">
+        <di:waypoint x="520" y="1980" />
+        <di:waypoint x="580" y="1980" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Doc_RetryLoop_di" bpmnElement="Flow_Doc_RetryLoop">
+        <di:waypoint x="1400" y="2055" />
+        <di:waypoint x="1400" y="1920" />
+        <di:waypoint x="670" y="1920" />
+        <di:waypoint x="670" y="1940" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1028" y="1883" width="16" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Doc_03_di" bpmnElement="Flow_Doc_03">
+        <di:waypoint x="760" y="1980" />
+        <di:waypoint x="830" y="1980" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Doc_Yes_di" bpmnElement="Flow_Doc_Yes">
+        <di:waypoint x="880" y="1980" />
+        <di:waypoint x="1535" y="1980" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1051" y="1949" width="18" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Doc_No_di" bpmnElement="Flow_Doc_No">
+        <di:waypoint x="855" y="2005" />
+        <di:waypoint x="855" y="2080" />
+        <di:waypoint x="925" y="2080" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="863" y="2032" width="15" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Doc_04_di" bpmnElement="Flow_Doc_04">
+        <di:waypoint x="1725" y="1980" />
+        <di:waypoint x="1840" y="1980" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Doc_05_di" bpmnElement="Flow_Doc_05">
+        <di:waypoint x="2020" y="1980" />
+        <di:waypoint x="2110" y="1980" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Doc_06_di" bpmnElement="Flow_Doc_06">
+        <di:waypoint x="2330" y="1980" />
+        <di:waypoint x="2462" y="1980" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Doc_Timeout_di" bpmnElement="Flow_Doc_Timeout">
+        <di:waypoint x="630" y="2038" />
+        <di:waypoint x="630" y="2080" />
+        <di:waypoint x="925" y="2080" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Doc_Error_di" bpmnElement="Flow_Doc_Error">
+        <di:waypoint x="738" y="2036" />
+        <di:waypoint x="738" y="2080" />
+        <di:waypoint x="925" y="2080" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Doc_07_di" bpmnElement="Flow_Doc_07">
+        <di:waypoint x="1115" y="2080" />
+        <di:waypoint x="1375" y="2080" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Doc_ManualRetry_di" bpmnElement="Flow_Doc_ManualRetry">
+        <di:waypoint x="1520" y="2140" />
+        <di:waypoint x="1473" y="2140" />
+        <di:waypoint x="1473" y="2100" />
+        <di:waypoint x="1405" y="2100" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Doc_MaxRetries_di" bpmnElement="Flow_Doc_MaxRetries">
+        <di:waypoint x="1425" y="2080" />
+        <di:waypoint x="1882" y="2080" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1643" y="2055" width="23" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Participant_Consultation_di" bpmnElement="Participant_Consultation" isHorizontal="true">
+        <dc:Bounds x="160" y="1460" width="2440" height="300" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Receive_StartMedicalConsultation_di" bpmnElement="Receive_StartMedicalConsultation" bioc:stroke="#0d4372" bioc:fill="#bbdefb" color:background-color="#bbdefb" color:border-color="#0d4372">
+        <dc:Bounds x="230" y="1530" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="199" y="1567" width="82" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0rfan4n_di" bpmnElement="Boundary_StartNoShow" bioc:stroke="#831311" bioc:fill="#ffcdd2" color:background-color="#ffcdd2" color:border-color="#831311">
+        <dc:Bounds x="222" y="1650" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="211" y="1686" width="73" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_Consultation_di" bpmnElement="End_Consultation" bioc:stroke="#831311" bioc:fill="#ffcdd2" color:background-color="#ffcdd2" color:border-color="#831311">
+        <dc:Bounds x="2542" y="1530" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2529" y="1566" width="62" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Send_PostConsultationSummaryGenerated_di" bpmnElement="Send_PostConsultationSummaryGenerated" bioc:stroke="#5b176d" bioc:fill="#e1bee7" color:background-color="#e1bee7" color:border-color="#5b176d">
+        <dc:Bounds x="2280" y="1508" width="240" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_GenerarPostSummary_di" bpmnElement="Task_GenerarPostSummary" bioc:stroke="#6b3c00" bioc:fill="#ffe0b2" color:background-color="#ffe0b2" color:border-color="#6b3c00">
+        <dc:Bounds x="1920" y="1628" width="220" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Send_ConsultationCompleted_di" bpmnElement="Send_ConsultationCompleted" bioc:stroke="#5b176d" bioc:fill="#e1bee7" color:background-color="#e1bee7" color:border-color="#5b176d">
+        <dc:Bounds x="1910" y="1508" width="220" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_RegistrarRemision_di" bpmnElement="Task_RegistrarRemision" bioc:stroke="#6b3c00" bioc:fill="#ffe0b2" color:background-color="#ffe0b2" color:border-color="#6b3c00">
+        <dc:Bounds x="1350" y="1508" width="180" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Send_ReferralCreated_di" bpmnElement="Send_ReferralCreated" bioc:stroke="#5b176d" bioc:fill="#e1bee7" color:background-color="#e1bee7" color:border-color="#5b176d">
+        <dc:Bounds x="1600" y="1508" width="200" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_FinalizarConsulta_di" bpmnElement="Task_FinalizarConsulta" bioc:stroke="#6b3c00" bioc:fill="#ffe0b2" color:background-color="#ffe0b2" color:border-color="#6b3c00">
+        <dc:Bounds x="930" y="1630" width="180" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_Remision_di" bpmnElement="Gateway_Remision" isMarkerVisible="true" bioc:stroke="#205022" bioc:fill="#c8e6c9" color:background-color="#c8e6c9" color:border-color="#205022">
+        <dc:Bounds x="855" y="1523" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="857" y="1499" width="46" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_RegistrarDatos_di" bpmnElement="Task_RegistrarDatos" bioc:stroke="#6b3c00" bioc:fill="#ffe0b2" color:background-color="#ffe0b2" color:border-color="#6b3c00">
+        <dc:Bounds x="580" y="1508" width="180" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Receive_PreConsultationSummary_Consultation_di" bpmnElement="Receive_PreConsultationSummary_Consultation" bioc:stroke="#0d4372" bioc:fill="#bbdefb" color:background-color="#bbdefb" color:border-color="#0d4372">
+        <dc:Bounds x="402" y="1530" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="377" y="1566" width="87" height="53" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_ConsultationNotStarted_di" bpmnElement="End_ConsultationNotStarted" bioc:stroke="#831311" bioc:fill="#ffcdd2" color:background-color="#ffcdd2" color:border-color="#831311">
+        <dc:Bounds x="412" y="1650" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="390" y="1686" width="80" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_Cons_01_di" bpmnElement="Flow_Cons_01">
+        <di:waypoint x="266" y="1548" />
+        <di:waypoint x="402" y="1548" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Cons_PreSummary_di" bpmnElement="Flow_Cons_PreSummary">
+        <di:waypoint x="438" y="1548" />
+        <di:waypoint x="580" y="1548" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Cons_02_di" bpmnElement="Flow_Cons_02">
+        <di:waypoint x="760" y="1548" />
+        <di:waypoint x="855" y="1548" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Cons_Yes_di" bpmnElement="Flow_Cons_Yes">
+        <di:waypoint x="905" y="1548" />
+        <di:waypoint x="1350" y="1548" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1119" y="1523" width="18" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Cons_No_di" bpmnElement="Flow_Cons_No">
+        <di:waypoint x="880" y="1573" />
+        <di:waypoint x="880" y="1670" />
+        <di:waypoint x="930" y="1670" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="888" y="1612" width="15" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Cons_03_di" bpmnElement="Flow_Cons_03">
+        <di:waypoint x="1530" y="1548" />
+        <di:waypoint x="1600" y="1548" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Cons_03b_di" bpmnElement="Flow_Cons_03b">
+        <di:waypoint x="1700" y="1588" />
+        <di:waypoint x="1700" y="1670" />
+        <di:waypoint x="1110" y="1670" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Cons_04_di" bpmnElement="Flow_Cons_04">
+        <di:waypoint x="1110" y="1670" />
+        <di:waypoint x="1910" y="1670" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Cons_NotStarted_di" bpmnElement="Flow_Cons_NotStarted">
+        <di:waypoint x="257" y="1674" />
+        <di:waypoint x="309" y="1674" />
+        <di:waypoint x="309" y="1668" />
+        <di:waypoint x="412" y="1668" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Cons_07_di" bpmnElement="Flow_Cons_07">
+        <di:waypoint x="2520" y="1548" />
+        <di:waypoint x="2542" y="1548" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Cons_06_di" bpmnElement="Flow_Cons_06">
+        <di:waypoint x="2140" y="1668" />
+        <di:waypoint x="2280" y="1668" />
+        <di:waypoint x="2280" y="1578" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Cons_05_di" bpmnElement="Flow_Cons_05">
+        <di:waypoint x="2020" y="1588" />
+        <di:waypoint x="2020" y="1628" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Participant_Physician_di" bpmnElement="Participant_Physician" isHorizontal="true">
+        <dc:Bounds x="160" y="1270" width="2450" height="120" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Start_Physician_di" bpmnElement="Start_Physician" bioc:stroke="#205022" bioc:fill="#c8e6c9" color:background-color="#c8e6c9" color:border-color="#205022">
+        <dc:Bounds x="230" y="1312" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="215" y="1274.5" width="65" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_Physician_di" bpmnElement="End_Physician" bioc:stroke="#831311" bioc:fill="#ffcdd2" color:background-color="#ffcdd2" color:border-color="#831311">
+        <dc:Bounds x="462" y="1312" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="449" y="1348" width="62" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_Physician_01_di" bpmnElement="Flow_Physician_01">
+        <di:waypoint x="266" y="1330" />
+        <di:waypoint x="462" y="1330" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Participant_Patient_di" bpmnElement="Participant_Patient" isHorizontal="true">
+        <dc:Bounds x="160" y="80" width="900" height="120" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Start_Patient_di" bpmnElement="Start_Patient" bioc:stroke="#205022" bioc:fill="#c8e6c9" color:background-color="#c8e6c9" color:border-color="#205022">
+        <dc:Bounds x="230" y="122" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="211" y="158" width="75" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_Patient_di" bpmnElement="End_Patient" bioc:stroke="#831311" bioc:fill="#ffcdd2" color:background-color="#ffcdd2" color:border-color="#831311">
+        <dc:Bounds x="400" y="122" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="380" y="158" width="76" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_Patient_01_di" bpmnElement="Flow_Patient_01">
+        <di:waypoint x="266" y="140" />
+        <di:waypoint x="400" y="140" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Participant_Agent_di" bpmnElement="Participant_Agent" isHorizontal="true">
+        <dc:Bounds x="160" y="230" width="1200" height="190" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_Agent_di" bpmnElement="End_Agent" bioc:stroke="#831311" bioc:fill="#ffcdd2" color:background-color="#ffcdd2" color:border-color="#831311">
+        <dc:Bounds x="1242" y="280" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1217" y="316" width="87" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Send_PreConsultationSummaryGenerated_di" bpmnElement="Send_PreConsultationSummaryGenerated" bioc:stroke="#5b176d" bioc:fill="#e1bee7" color:background-color="#e1bee7" color:border-color="#5b176d">
+        <dc:Bounds x="940" y="258" width="240" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_GenerarSummary_di" bpmnElement="Task_GenerarSummary" bioc:stroke="#6b3c00" bioc:fill="#ffe0b2" color:background-color="#ffe0b2" color:border-color="#6b3c00">
+        <dc:Bounds x="640" y="258" width="200" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_ProcesarPreconsulta_di" bpmnElement="Task_ProcesarPreconsulta" bioc:stroke="#6b3c00" bioc:fill="#ffe0b2" color:background-color="#ffe0b2" color:border-color="#6b3c00">
+        <dc:Bounds x="405" y="258" width="170" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Receive_PreconsultationStarted_di" bpmnElement="Receive_PreconsultationStarted" bioc:stroke="#0d4372" bioc:fill="#bbdefb" color:background-color="#bbdefb" color:border-color="#0d4372">
+        <dc:Bounds x="242" y="280" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="217" y="316" width="87" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_Agent_04_di" bpmnElement="Flow_Agent_04">
+        <di:waypoint x="1180" y="298" />
+        <di:waypoint x="1242" y="298" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Agent_03_di" bpmnElement="Flow_Agent_03">
+        <di:waypoint x="840" y="298" />
+        <di:waypoint x="940" y="298" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Agent_02_di" bpmnElement="Flow_Agent_02">
+        <di:waypoint x="575" y="298" />
+        <di:waypoint x="640" y="298" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Agent_01_di" bpmnElement="Flow_Agent_01">
+        <di:waypoint x="278" y="298" />
+        <di:waypoint x="405" y="298" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Participant_Professional_di" bpmnElement="Participant_Professional" isHorizontal="true">
+        <dc:Bounds x="160" y="1080" width="1000" height="160" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Receive_CheckAvailability_di" bpmnElement="Receive_CheckAvailability" bioc:stroke="#0d4372" bioc:fill="#bbdefb" color:background-color="#bbdefb" color:border-color="#0d4372">
+        <dc:Bounds x="230" y="1142" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="203" y="1178" width="90" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_ResolverDisponibilidad_di" bpmnElement="Task_ResolverDisponibilidad" bioc:stroke="#6b3c00" bioc:fill="#ffe0b2" color:background-color="#ffe0b2" color:border-color="#6b3c00">
+        <dc:Bounds x="340" y="1120" width="200" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Send_AvailabilityResult_di" bpmnElement="Send_AvailabilityResult" bioc:stroke="#5b176d" bioc:fill="#e1bee7" color:background-color="#e1bee7" color:border-color="#5b176d">
+        <dc:Bounds x="660" y="1120" width="220" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_Professional_di" bpmnElement="End_Professional" bioc:stroke="#831311" bioc:fill="#ffcdd2" color:background-color="#ffcdd2" color:border-color="#831311">
+        <dc:Bounds x="942" y="1142" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="934" y="1178" width="52" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_Prof_01_di" bpmnElement="Flow_Prof_01">
+        <di:waypoint x="266" y="1160" />
+        <di:waypoint x="340" y="1160" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Prof_02_di" bpmnElement="Flow_Prof_02">
+        <di:waypoint x="540" y="1160" />
+        <di:waypoint x="660" y="1160" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Prof_03_di" bpmnElement="Flow_Prof_03">
+        <di:waypoint x="880" y="1160" />
+        <di:waypoint x="942" y="1160" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Participant_PatientService_di" bpmnElement="Participant_PatientService" isHorizontal="true">
+        <dc:Bounds x="150" y="2540" width="2450" height="290" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Receive_AppointmentCreated_PatientService_di" bpmnElement="Receive_AppointmentCreated_PatientService" bioc:stroke="#0d4372" bioc:fill="#bbdefb" color:background-color="#bbdefb" color:border-color="#0d4372">
+        <dc:Bounds x="220" y="2580" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="195" y="2530" width="86" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Receive_ConsultationPdfGenerated_PatientService_di" bpmnElement="Receive_ConsultationPdfGenerated_PatientService" bioc:stroke="#0d4372" bioc:fill="#bbdefb" color:background-color="#bbdefb" color:border-color="#0d4372">
+        <dc:Bounds x="212" y="2702" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="178" y="2760" width="87" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_RegistrarPdfPaciente_di" bpmnElement="Task_RegistrarPdfPaciente" bioc:stroke="#6b3c00" bioc:fill="#ffe0b2" color:background-color="#ffe0b2" color:border-color="#6b3c00">
+        <dc:Bounds x="460" y="2690" width="180" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_PatientService_Pdf_di" bpmnElement="End_PatientService_Pdf" bioc:stroke="#831311" bioc:fill="#ffcdd2" color:background-color="#ffcdd2" color:border-color="#831311">
+        <dc:Bounds x="1092" y="2702" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1073" y="2743" width="74" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_RegistrarCitaPaciente_di" bpmnElement="Task_RegistrarCitaPaciente" bioc:stroke="#6b3c00" bioc:fill="#ffe0b2" color:background-color="#ffe0b2" color:border-color="#6b3c00">
+        <dc:Bounds x="490" y="2568" width="180" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_PatientService_Appt_di" bpmnElement="End_PatientService_Appt" bioc:stroke="#831311" bioc:fill="#ffcdd2" color:background-color="#ffcdd2" color:border-color="#831311">
+        <dc:Bounds x="1092" y="2580" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1139" y="2596" width="62" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_PatSvc_01_di" bpmnElement="Flow_PatSvc_01">
+        <di:waypoint x="256" y="2598" />
+        <di:waypoint x="490" y="2598" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_PatSvc_01b_di" bpmnElement="Flow_PatSvc_01b">
+        <di:waypoint x="670" y="2598" />
+        <di:waypoint x="1092" y="2598" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_PatSvc_02_di" bpmnElement="Flow_PatSvc_02">
+        <di:waypoint x="248" y="2720" />
+        <di:waypoint x="460" y="2720" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_PatSvc_02b_di" bpmnElement="Flow_PatSvc_02b">
+        <di:waypoint x="640" y="2720" />
+        <di:waypoint x="1092" y="2720" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="MF_Appt_CheckAvailability_di" bpmnElement="MF_Appt_CheckAvailability">
+        <di:waypoint x="450" y="778" />
+        <di:waypoint x="450" y="1142" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="435" y="953" width="155" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="MF_Prof_AvailabilityResult_di" bpmnElement="MF_Prof_AvailabilityResult">
+        <di:waypoint x="720" y="1120" />
+        <di:waypoint x="720" y="738" />
+        <di:waypoint x="706" y="738" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="672" y="953" width="216" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="MF_Appt_Created_Notification_di" bpmnElement="MF_Appt_Created_Notification">
+        <di:waypoint x="1220" y="778" />
+        <di:waypoint x="1220" y="2350" />
+        <di:waypoint x="238" y="2350" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1088" y="1793" width="163" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="MF_Appt_Created_PatientService_di" bpmnElement="MF_Appt_Created_PatientService">
+        <di:waypoint x="1320" y="768" />
+        <di:waypoint x="1320" y="2640" />
+        <di:waypoint x="238" y="2640" />
+        <di:waypoint x="238" y="2616" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1283" y="1813" width="153" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="MF_Agent_Summary_Appt_di" bpmnElement="MF_Agent_Summary_Appt">
+        <di:waypoint x="1060" y="338" />
+        <di:waypoint x="1060" y="510" />
+        <di:waypoint x="222" y="510" />
+        <di:waypoint x="222" y="738" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="604" y="493" width="232" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="MF_Consultation_Completed_di" bpmnElement="MF_Consultation_Completed">
+        <di:waypoint x="1970" y="1508" />
+        <di:waypoint x="1970" y="756" />
+        <di:waypoint x="1890" y="756" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1958" y="1123" width="143" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="MF_Document_PdfGenerated_PatientService_di" bpmnElement="MF_Document_PdfGenerated_PatientService">
+        <di:waypoint x="2220" y="2020" />
+        <di:waypoint x="2220" y="2770" />
+        <di:waypoint x="230" y="2770" />
+        <di:waypoint x="230" y="2738" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2192" y="2386" width="158" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="MF_Consultation_Referral_Notification_di" bpmnElement="MF_Consultation_Referral_Notification">
+        <di:waypoint x="1700" y="1588" />
+        <di:waypoint x="1700" y="1850" />
+        <di:waypoint x="1150" y="1850" />
+        <di:waypoint x="1150" y="2330" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1670" y="1718" width="79" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="MF_Consultation_PostSummary_di" bpmnElement="MF_Consultation_PostSummary">
+        <di:waypoint x="2500" y="1960" />
+        <di:waypoint x="2500" y="1588" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2472" y="1813" width="215" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="MF_Agent_Summary_Cons_di" bpmnElement="MF_Agent_Summary_Cons">
+        <di:waypoint x="1180" y="328" />
+        <di:waypoint x="1180" y="440" />
+        <di:waypoint x="310" y="440" />
+        <di:waypoint x="310" y="1548" />
+        <di:waypoint x="402" y="1548" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="673" y="423" width="194" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
