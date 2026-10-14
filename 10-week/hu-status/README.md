@@ -17,14 +17,16 @@
 
 | HU ID | Title | Status (todo/doing/done) | Evidence (PR or commit URL) |
 |---|---|---|---|
-| HU-05 | User and Healthcare Professional Management | doing | Professional Management DB implementation, validation, documentation, tests, constraints, indexes, foreign keys, seeds, and CI work. |
-| HU-16 | Download Consultation Summary as PDF | doing | Document Generation portal implementation, shell integration, Docker deployment, testing, and release preparation. |
+| HU-05 | User and Healthcare Professional Management | doing | [Professional Management DB v2.0.0 release](https://github.com/code-corhuila/telemed-ia-professional-management-db/releases/tag/v2.0.0); implementation and PR evidence is summarized in §6. Acceptance evidence and current PR states are not independently verified here. |
+| HU-16 | Download Consultation Summary as PDF | doing | [Document Generation portal v2.0.0 release](https://github.com/code-corhuila/telemed-ia-document-generation-portal/releases/tag/v2.0.0), local portal screenshots in §6, and reported [Front PR #13](https://github.com/code-corhuila/telemed-ia-front/pull/13). Portal currently uses synthetic data; the real API/PDF flow is not verified. |
 | HU-07 | Check General Practitioner Availability | doing | Team progress in Appointment Scheduling; tracked in the shared board. |
 | HU-08 | Schedule Appointment | doing | Team progress in Appointment Scheduling; tracked in the shared board. |
 | HU-09 | Manage My Appointments | doing | Team progress in Appointment Scheduling; tracked in the shared board. |
 | HU-10 | View Professional Appointment | doing | Team progress in Appointment Scheduling; tracked in the shared board. |
 
 HU-05 and HU-16 represent the two main domains assigned to me during this stage. HU-07, HU-08, HU-09 and HU-10 are included as team-level progress and are not presented as individual implementation work.
+
+The team release includes published tags in multiple repositories, but it does not establish that every repository is released or that every cross-service end-to-end test passed. The individual release evidence attributable to me is listed separately in §2.10 and §6.
 
 During Week 10, the team continued preparing the four core domains of the distributed system:
 
@@ -73,7 +75,7 @@ Relevant individual commits included:
 - `chore(professional-db): address PR #22 review findings`
 - `fix(professional-db): make ddl-alter-013 retry-safe with DROP CONSTRAINT IF EXISTS`
 
-These changes were developed and reviewed through the corresponding HU-005 database branches and pull requests.
+These changes were developed through the corresponding HU-005 database branches and pull requests. The handoff identifies PRs #25–#30 as release work I handled, including Anexo J/Anexo A alignment, schema qualification, develop-to-qa promotion and v2.0.0 release. Their current states, exact URLs, merge commits and review outcomes were not independently available in this audit; these are reported from the handoff, not as verified current PR states.
 
 ### 2.2 Document Generation — HU-16
 
@@ -115,7 +117,7 @@ The work included:
 - Validating that the shell continues working when the remote is unavailable.
 - Keeping the portal aligned with the course Anexo H requirements.
 
-The portal reached 17 automated tests, including model, mock, route, regression and component tests.
+The existing Week 10 record reports 17 automated tests, including model, mock, route, regression and component tests. No dated test run or CI result is linked here, so a current passing run is not asserted. The supplied handoff says the Document Generation API is not implemented as a real API; the portal uses synthetic document data. PDF generation, MinIO integration and a complete real backend flow are not claimed as operational.
 
 ### 2.3 Front integration
 
@@ -130,7 +132,7 @@ My contribution included:
 - Adding a fallback test for an unavailable remote.
 - Integrating the portal according to the existing Native Federation structure.
 
-This work was delivered through the Front integration PR and merged into the shared development branch.
+The handoff identifies this work as merged through [Front PR #13](https://github.com/code-corhuila/telemed-ia-front/pull/13). I contributed the document remote route configuration, federation manifest registration, shell route, sidebar entry, and remote-unavailable fallback test. The PR's current state and individual commit SHAs were not independently verified in this audit.
 
 ### 2.4 Docker and deployment validation
 
@@ -152,7 +154,7 @@ The deployment work included:
 - Validation that the shell displays the remote-unavailable fallback.
 - Validation that the portal returns after the container is started again.
 
-The final validation demonstrated:
+The existing status reports the following validation; the linked local Docker screenshot is visual evidence, not a captured command transcript or test report. No fresh runtime validation was run for this update:
 
 - CORS allowed for the shell origin.
 - CORS blocked for an unauthorized origin.
@@ -180,14 +182,14 @@ The professor identified several architectural and modeling problems, including:
 
 I worked with the team to correct these points.
 
-The corrected BPMN now represents the core distributed architecture with the four core microservices:
+The current checked-in Week 10 snapshot [BPMN source](Telemed-core.bpmn) models the four core microservices. The canonical current source is the [nine-pool BPMN in telemed-ia-docs](https://github.com/code-corhuila/telemed-ia-docs/blob/main/08-diagrams/core/telemed-core.bpmn), documented in its [core BPMN guide](https://github.com/code-corhuila/telemed-ia-docs/blob/main/08-diagrams/core/README.md). The guide/source were updated through [merged PR #89](https://github.com/code-corhuila/telemed-ia-docs/pull/89); the current pool-naming correction is commit [`3227767`](https://github.com/code-corhuila/telemed-ia-docs/commit/32277676c3714cbb6338d8062d9d6629eeea5b43). The Week 10 copy is a dated snapshot, not the canonical latest file:
 
 - Intelligent Agent
 - Appointment Scheduling
 - Medical Consultation
 - Document Generation
 
-The corrected model uses the appropriate message/event-oriented communication, separates the participating contexts, includes failure/retry considerations, and aligns the names with the real repositories.
+The current BPMN contains nine participant pools: Patient, Intelligent Agent, Appointment Scheduling, Professional Management, Physician, Medical Consultation, Document Generation, Notification and Patient Service. This matches the nine-pool core choreography description in the handoff, with four pools for the core domains and the remaining participants representing actors/supporting services. It uses message/event-oriented communication and contains failure/retry considerations. The BPMN is a documentation artifact and does not prove the production services implement its choreography.
 
 The BPMN correction was a team activity, with my individual contribution focused on applying and validating the corrections resulting from the professor's feedback.
 
@@ -204,6 +206,8 @@ My individual documentation commits included:
 - `docs(diagrams): fix index status and register change-log in governance rules`
 
 I also participated in the documentation organization around the diagrams and the core BPMN.
+
+Current PR evidence: the latest closed-PR screenshot supplied by the user reports all seven documentation PRs as merged: [#87 — ADR-019/ADR-020 for infra-postgres and infra-mongo](https://github.com/code-corhuila/telemed-ia-docs/pull/87); [#88 — reconcile repository states with Corte 2 releases](https://github.com/code-corhuila/telemed-ia-docs/pull/88); [#89 — reconcile core BPMN to nine-pool choreography](https://github.com/code-corhuila/telemed-ia-docs/pull/89); [#90 — worker documentation and project-control registers](https://github.com/code-corhuila/telemed-ia-docs/pull/90); [#91 — dominant criterion and accepted cost in ADR-001–ADR-010](https://github.com/code-corhuila/telemed-ia-docs/pull/91); [#92 — criterion and cost in ADR-011–ADR-016](https://github.com/code-corhuila/telemed-ia-docs/pull/92); and [#93 — traceId rule, encoding and template links](https://github.com/code-corhuila/telemed-ia-docs/pull/93). This screenshot is the supplied evidence for the seven merged states; it does not establish merge status for the Professional Management, PostgreSQL infrastructure or Front PRs. The current docs `main` history independently contains merge commits for #87, #89, #90 and #92, with tip `7141254a0c08c3375edfd45c827dd945ecb78133` (2026-10-13); #88, #91 and #93 are reported merged based on the newer screenshot. Existing ADR-015 and diagrams commit subjects remain history descriptions without independently located commit URLs/SHAs. The Week 10 snapshot [Telemed-core.bpmn](Telemed-core.bpmn) was added in course-repository commit [`0c05cc6`](https://github.com/Sofialjure/sistemas-distribuidos-2026-b-g2/commit/0c05cc6228ed750bfb9ffa1337a79c98a1b257f4).
 
 ### 2.7 Week 10 sessions and technical learning
 
@@ -301,10 +305,31 @@ During the Thursday session, the professor explained the expected MVP 2 delivery
 
 The session clarified that MVP 2 must demonstrate not only the happy path but also failure and consistency behavior, and that the release process must be traceable through the environment promotion flow and final version tag.
 
+### 2.10 Release management, registry and demonstration
+
+I was responsible for Corte 2 release work and for maintaining the team-wide [Week 10 release registry](release.md). The file is locally prepared and untracked in this course repository; it has not been committed or published. It now lists 21 published tag records across 19 repositories: 19 current release versions plus 2 superseded tags. The inventory covers team repositories and does not mean I developed all of them; my individual release work includes the specific tags below.
+
+The three principal domain-repository tags reported for my work are:
+
+- [Professional Management DB `v2.0.0`](https://github.com/code-corhuila/telemed-ia-professional-management-db/releases/tag/v2.0.0), commit `cc6a415eb8a913ff31a76e77e405891e3ebcd005` — schema alignment, Liquibase changesets, rollback coverage and Anexo J compliance.
+- [Document Generation DB `v2.0.0`](https://github.com/code-corhuila/telemed-ia-document-generation-db/releases/tag/v2.0.0), commit `b165e89f2493a89e0df151a07d57149784324601` — `document_generation` schema, `consultation_document` state handling, idempotency/retry support and MinIO reference.
+- [Document Generation portal `v2.0.0`](https://github.com/code-corhuila/telemed-ia-document-generation-portal/releases/tag/v2.0.0), commit `23552e430d99574ed0569504594e0638e568d111` — Angular 21/Native Federation portal, four UI states, hexagonal data-source port and synthetic document data.
+
+Additional infrastructure tags under my reported release responsibility:
+
+- [PostgreSQL infrastructure `v2.0.0`](https://github.com/code-corhuila/telemed-ia-infra-postgres/releases/tag/v2.0.0), commit `7720c82a06c31488415159511bea54e0cdb01219` — shared PostgreSQL instance, bootstrap and domain integration.
+- [PostgreSQL infrastructure `v2.1.0`](https://github.com/code-corhuila/telemed-ia-infra-postgres/releases/tag/v2.1.0), commit `23afaa076b3f3ce6f822ae2acc8a42a675648610` — later infrastructure release adding Medical Consultation DB to the shared composition.
+
+The five tag URLs and SHAs above are retained from the supplied handoff. Public tag refs confirm the PostgreSQL infrastructure `v2.0.0` and `v2.1.0` commit targets. The Appointment Scheduling Portal `v2.0.0` target is recorded in the registry as superseded by current `v2.0.1`; the current `v2.0.1` target matches the registry. The other three individually attributed tag SHAs remain handoff/registry evidence and were not independently fetched in this audit. Repositories without tags remain pending as listed in `release.md`.
+
+The handoff identifies these Professional Management DB PRs as my work: #25 (align deploy compose, env and README with Anexo J), #26 (align role management with Anexo J), #27 (refactor schema qualification of historical changesets), #28 (close Anexo A gaps), #29 (develop-to-qa promotion) and #30 (v2.0.0 release to main). For PostgreSQL infrastructure, it identifies #9 (bootstrap Professional Management), #10 (pin search_path and revoke public access), #11 (develop-to-qa promotion), #12 (v2.0.0 release to main) and #15 (v2.1.0 release to main) as my work; it attributes #14 (Medical Consultation promotion to qa) to a teammate. The supplied handoff says I merged the release PRs. Exact PR URLs, current states, merge SHAs, approvals and bot-review findings/resolutions could not be independently verified here, so I do not report those as confirmed facts.
+
+I was responsible for preparing the team demonstration video, limited to 120 seconds, covering the functional front for Intelligent Agent, Appointment Scheduling, Medical Consultation and Document Generation. According to my confirmation, the video was submitted through Moodle as part of the course delivery. No public video URL or repository file is available. The submission is evidence of the demonstration deliverable, not proof of backend end-to-end behavior or passing cross-service tests.
+
 ## 3. Blockers and risks
 
-- The final `v2.0.0` release tag is part of the MVP 2 closure and must be created only after the corresponding main release is approved and merged.
-- The final release evidence depends on the completion of the integrated-system validation.
+- The registry distinguishes 21 published tag records (including two superseded tags), 19 current releases across 19 repositories, and repositories still pending. The two PostgreSQL infrastructure targets and both Appointment Scheduling Portal targets were checked against public refs; other listed tags were not all independently verified.
+- Published tags do not establish that integrated-system validation or cross-service end-to-end tests passed.
 - The team must demonstrate a real failure/compensation or duplicate-event scenario during the final MVP 2 demonstration.
 - Production Document Generation API integration is not part of the current Cut 2 portal delivery; the portal intentionally uses synthetic data at this stage.
 - The Document Generation API remains planned for a later stage.
@@ -319,8 +344,7 @@ The session clarified that MVP 2 must demonstrate not only the happy path but al
 - Finalize the integrated-system evidence.
 - Complete the failure/compensation demonstration.
 - Verify the release checklist.
-- Complete the promotion from `develop` through `qa` to `main`.
-- Create and verify the `v2.0.0` tag on `main`.
+- Verify the remaining repository tags and pending-repository list against their source repositories.
 - Complete the final HU-status evidence for every team member.
 - Prepare the Moodle submission for the release.
 - Prepare the MVP 2 presentation/sustentation.
@@ -348,11 +372,11 @@ Additional Week 10 release checks:
 - [x] Native Federation shell integration tested.
 - [x] Docker deployment validated.
 - [x] Portal unavailable fallback validated.
-- [x] BPMN corrected according to the professor's architectural feedback.
+- [x] Nine-pool BPMN source and screenshot recorded; the source reflects the described architectural corrections.
 - [x] ADR-015 documentation updated.
 - [x] Release process documented and prepared.
-- [ ] Final `v2.0.0` tag verified on `main`.
-- [ ] Final integrated-system release demonstration completed.
+- [x] Five individually reported Corte 2 tags recorded in §2.10 with release URLs and SHAs; PostgreSQL infrastructure targets were verified against public refs, while the other three remain handoff/registry evidence.
+- [x] Demonstration video (maximum 120 seconds) prepared and submitted through Moodle, according to my confirmation; no public URL is available. This is not backend end-to-end test evidence.
 - [ ] Final Moodle release submission completed.
 
 ## 6. Evidence links
@@ -361,6 +385,7 @@ Additional Week 10 release checks:
 
 - Professional Management DB repository: https://github.com/code-corhuila/telemed-ia-professional-management-db
 - HU-05 Professional Management API issue: https://github.com/code-corhuila/telemed-ia-professional-management-api/issues/10
+- Release: [v2.0.0](https://github.com/code-corhuila/telemed-ia-professional-management-db/releases/tag/v2.0.0), reported target `cc6a415eb8a913ff31a76e77e405891e3ebcd005` (from supplied handoff; not independently fetched here).
 
 Individual Professional Management DB evidence includes the changes for:
 
@@ -380,6 +405,7 @@ Individual Professional Management DB evidence includes the changes for:
 
 - HU-16 issue: https://github.com/code-corhuila/telemed-ia-document-generation-api/issues/1
 - Document Generation Portal repository: https://github.com/code-corhuila/telemed-ia-document-generation-portal
+- Release: [v2.0.0](https://github.com/code-corhuila/telemed-ia-document-generation-portal/releases/tag/v2.0.0), reported target `23552e430d99574ed0569504594e0638e568d111` (from supplied handoff; not independently fetched here).
 
 Portal evidence:
 
@@ -403,6 +429,8 @@ My Front contribution included:
 - `/documents` route;
 - Documents sidebar entry;
 - remote-unavailable fallback test.
+
+The supplied handoff lists these individual Front commit subjects: `feat(front): add document remote routes config`; `feat(front): register document remote in federation manifest`; `feat(front): add document route to shell`; `feat(front): add documents entry to sidebar navigation`; and `test(front): cover document remote fallback when remote is unavailable`. Their SHAs and direct commit URLs could not be verified from this checkout. The handoff reports that they were included in PR #13; its current state remains unverified here.
 
 ### Documentation / ADR
 
@@ -532,10 +560,10 @@ At team level, the four core domains continued to be developed and integrated, w
 
 The Week 10 sessions were studied and applied through the optional activities covering persistence patterns and MVP 2 release preparation.
 
-The technical release is being prepared through the required:
+The reported individual release tags are listed in §2.10. The complete promotion trail and integrated-system verification remain:
 
 `develop → qa → main → v2.0.0`
 
 flow using `cherry-pick -x` for traceability.
 
-The remaining release actions are the final integrated-system validation, failure demonstration, approval/merge to `main`, creation of `v2.0.0`, completion of the team evidence, and preparation for the Week 11 Moodle submission and presentation.
+The locally prepared release registry counts 21 published tag records, 19 current release versions across 19 repositories, and 2 superseded tags; it remains untracked and unpublished. Remaining evidence includes verification of the other tag targets, repository-specific promotion links, PR states and merge SHAs where not already supported, and final integrated-system validation. The video URL is not public; Moodle submission is confirmed by the user. No complete cross-service pass is claimed here.
