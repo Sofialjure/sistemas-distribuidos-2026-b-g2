@@ -1,37 +1,24 @@
-<!-- HU-STATUS TEMPLATE - do NOT remove the <!-- ... --> markers or the table headers.
-     Your weekly grade is read AUTOMATICALLY from this file:
-       11-week/hu-status/README.md  (inside YOUR fork). English. -->
+# Week 11 Status - Delivery 1
 
-# Weekly Status - Week 11
+**Project:** TeleMed IA
+**Critical Journey:** Schedule Appointment
 
-<!-- CONFIG-START - must match your profile repo (username/username) CONFIG -->
-- FULL_NAME:
-- GITHUB_USER:
-- TEAM:
-- SPRINT_GOAL:
-<!-- CONFIG-END -->
+## Summary of Work Completed (CP0 to CP4)
+- **CP0:** Setup of the workshop directory and reflection document.
+- **CP1:** Mapped the distributed trace for the `Schedule Appointment` journey across `api-gateway`, `appointment-scheduling-api`, `professional-management-api`, and `notification-service`. Documented the trace context propagation.
+- **CP2:** Defined the structured JSON log contract with standard and domain-specific fields (e.g., `appointment_id`, `patient_id`), including "never log" rules for PII.
+- **CP3:** Implemented Node.js middleware and a structured logger. Added trace context propagation to downstream calls and exposed metrics. Automated test passed.
+- **CP4:** Defined the Golden Signals metric catalog and Prometheus queries for `appointment-scheduling-api`, including cardinality rules and latency buckets.
 
-## 1. User stories worked this week
-| HU ID | Title | Status (todo/doing/done) | Evidence (PR or commit URL) |
-|---|---|---|---|
-| HU-XXX-001 |  |  |  |
+## Commit History
+*   CP0 Setup: `<PEGA_AQUI_EL_SHA>` (docs(w11): start observability workshop)
+*   CP1 Journey: `<PEGA_AQUI_EL_SHA>` (docs(w11): map critical journey and trace propagation)
+*   CP2 Logs: `<PEGA_AQUI_EL_SHA>` (docs(w11): define structured log contract)
+*   CP3 Middleware: `<PEGA_AQUI_EL_SHA>` (feat(w11): add trace-context middleware and structured logger)
+*   CP3 Propagation: `<PEGA_AQUI_EL_SHA>` (feat(w11): propagate context downstream and expose metrics)
+*   CP4 Metrics: `<PEGA_AQUI_EL_SHA>` (docs(w11): define golden signals and metric catalog)
 
-## 2. My individual contribution
--
-
-## 3. Blockers and risks
--
-
-## 4. Plan for next week
--
-
-## 5. Compliance self-check
-- [ ] Conventional Commits - `type(scope): summary`
-- [ ] Per-environment HU branch + PR to that environment (hu-xxx-dev -> develop, ...)
-- [ ] Testable acceptance criteria
-- [ ] Tests added/updated (unit / integration)
-- [ ] DDD / hexagonal boundaries respected (domain has no I/O)
-- [ ] No secrets; config via environment variables
-
-## 6. Evidence links
--
+## Next Steps (Delivery 2)
+- Define SLOs and Error Budget.
+- Implement Burn-rate alerts.
+- Write Runbook and Incident Postmortem.
