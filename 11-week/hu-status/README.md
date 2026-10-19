@@ -21,3 +21,15 @@
 - Define SLOs and Error Budget.
 - Implement Burn-rate alerts.
 - Write Runbook and Incident Postmortem.
+
+## Delivery 2 (CP6 to CP10)
+- **CP6:** Defined SLOs (Availability 99.5%, Latency 95% < 2s, Durability 99.9%) and Error Budget Policy.
+- **CP7:** Implemented Prometheus burn-rate alerts (fast and slow) and alert policy.
+- **CP8:** Wrote the runbook for the fast-burn alert.
+- **CP9:** Simulated a MinIO latency incident and wrote the blameless postmortem.
+- **CP10:** Completed the implementation plan in the reflection document.
+
+*   CP6 SLOs: `[PEGA EL SHA]`
+*   CP7 Alerts: `[PEGA EL SHA]`
+*   CP8 Runbook: `[PEGA EL SHA]`
+*   CP9 Incident: `[PEGA EL SHA]`
