@@ -41,11 +41,10 @@ sequenceDiagram
 
 ## Span Tree
 
-- Root Span: `Patient App POST /api/v1/documents` (`trace_id: 4bf92f3577b34da6a3ce929d0e0e4736`)
-  - Child Span: `api-gateway POST /api/v1/documents` (mismo `trace_id`)
-    - Child Span: `document-generation-api POST /api/v1/documents` (mismo `trace_id`)
-      - Child Span: `document-generation-db INSERT status=PENDING` (mismo `trace_id`)
-      - Async Producer Span: `Publish PostConsultationSummaryGenerated → RabbitMQ` (mismo `trace_id`)
-  - Async Consumer Span: `Worker consume PostConsultationSummaryGenerated` (extrae el mismo `trace_id` de los headers)
-    - Child Span: `MinIO Upload PDF` (mismo `trace_id`)
-    - Child Span: `document-generation-db UPDATE status=AVAILABLE` (mismo `trace_id`)
+- Root Span: `POST /documents (api-gateway)` (`trace_id: 4bf92f3577b34da6a3ce929d0e0e4736`)
+  - Child Span: `POST /documents (document-generation-api)` (mismo `trace_id`)
+    - Child Span: `INSERT status=PENDING (PostgreSQL)` (mismo `trace_id`)
+    - Child Span: `publish PostConsultationSummaryGenerated (RabbitMQ)` (mismo `trace_id`)
+      - Linked Async Span: `consume PostConsultationSummaryGenerated (Worker in document-generation-api)` (contexto vinculado al span de publicación)
+        - Child Span: `Upload PDF (MinIO)` (mismo `trace_id` propagado)
+        - Child Span: `UPDATE status=AVAILABLE (PostgreSQL)` (mismo `trace_id` propagado)
