@@ -1,4 +1,4 @@
-const SERVICE = process.env.SERVICE_NAME || 'appointment-scheduling-api';
+const SERVICE = process.env.SERVICE_NAME || 'document-generation-api';
 
 function log(level, traceId, event, message) {
   const record = {
