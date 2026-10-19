@@ -11,12 +11,11 @@
 - **CP4:** Defined the Golden Signals metric catalog and Prometheus queries for `document-generation-api`, including cardinality rules and latency buckets.
 
 ## Commit History
-*   CP0 Setup: `[SHA]` (docs(w11): start observability workshop)
-*   CP1 Journey: `[SHA]` (docs(w11): map critical journey and trace propagation)
-*   CP2 Logs: `[SHA]` (docs(w11): define structured log contract)
-*   CP3 Middleware: `[SHA]` (feat(w11): add trace-context middleware and structured logger)
-*   CP3 Propagation: `[SHA]` (feat(w11): propagate context downstream and expose metrics)
-*   CP4 Metrics: `[SHA]` (docs(w11): define golden signals and metric catalog)
+*   CP0 Setup: `da7261f`
+*   CP1 Journey: `11419f5`
+*   CP2 Logs: `9b55eea`
+*   CP3 Middleware: `77fa828`
+*   CP3 Propagation: `9c32425`
 
 ## Next Steps (Delivery 2)
 - Define SLOs and Error Budget.
