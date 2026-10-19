@@ -1,6 +1,6 @@
-# Ejecución
+# Execution
 
-Desde esta carpeta, ejecuta la prueba con Node.js:
+From this folder, run the test using Node.js:
 
 ```bash
 node test.js

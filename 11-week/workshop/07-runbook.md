@@ -1,18 +1,20 @@
 # Runbook — DocumentGenerationFastBurn
 
-**Flujo:** Generate Consultation Document  
-**Servicios y dependencias:** `api-gateway`, `document-generation-api`, PostgreSQL, RabbitMQ y MinIO.  
-**Severidad:** Critical.
+**Journey:** Generate Consultation Document
 
-## Síntomas
+**Services and dependencies:** `api-gateway`, `document-generation-api`, PostgreSQL, RabbitMQ, and MinIO.
 
-- Aumenta la latencia al generar o recuperar el PDF.
-- Crecen los errores de publicación/consumo o los mensajes pendientes en RabbitMQ.
-- Se dispara `DocumentGenerationFastBurn` y aumenta `document_generation_requests_total{status="error"}`.
+**Severity:** Critical.
 
-## Confirmación
+## Symptoms
 
-1. Verifica la tasa de errores y compárala con el total de solicitudes:
+- PDF generation or retrieval latency increases.
+- Publish/consume errors or pending messages in RabbitMQ increase.
+- `DocumentGenerationFastBurn` fires and `document_generation_requests_total{status="error"}` increases.
+
+## Confirmation
+
+1. Check the error rate and compare it with the total request rate:
 
    ```promql
    sum(rate(document_generation_requests_total{status="error"}[5m]))
@@ -20,35 +22,35 @@
    sum(rate(document_generation_requests_total[5m]))
    ```
 
-2. Revisa la latencia p95 del endpoint:
+2. Check the endpoint's p95 latency:
 
    ```promql
    histogram_quantile(0.95, sum by (le) (rate(document_generation_request_duration_seconds_bucket[5m])))
    ```
 
-3. Consulta el tamaño de la cola y confirma si los workers están drenando mensajes:
+3. Check the queue size and confirm whether workers are draining messages:
 
    ```promql
    document_generation_worker_queue_size
    ```
 
-4. Busca logs por `trace_id` de una solicitud fallida para seguir `api-gateway`, `document-generation-api`, PostgreSQL, RabbitMQ y MinIO. No busques por datos personales.
+4. Search the logs by `trace_id` for a failed request to follow it through `api-gateway`, `document-generation-api`, PostgreSQL, RabbitMQ, and MinIO. Do not search using personal data.
 
-## Mitigaciones — ordenadas por riesgo
+## Mitigations — Ordered by Risk
 
-1. **Activar el feature flag para pausar el consumo de RabbitMQ.** Reduce nuevas operaciones sobre dependencias degradadas y conserva los mensajes en la cola. Vigila el crecimiento de backlog y comunica el retraso de generación.
-2. **Escalar los workers de `document-generation-api` gradualmente.** Añade pocas réplicas y observa latencia y errores de MinIO, conexiones PostgreSQL y drenaje de RabbitMQ. Detén el escalado si aumenta la presión sobre una dependencia.
-3. **Restablecer la conexión con MinIO.** Solo después de confirmar conexiones bloqueadas o inválidas; renueva el pool/conexión y valida operaciones de escritura y lectura. Esta acción puede interrumpir cargas en curso.
+1. **Enable the feature flag to pause RabbitMQ consumption.** This reduces new operations against degraded dependencies and keeps messages in the queue. Monitor backlog growth and communicate the generation delay.
+2. **Gradually scale `document-generation-api` workers.** Add a small number of replicas and observe MinIO latency and errors, PostgreSQL connections, and RabbitMQ draining. Stop scaling if pressure on a dependency increases.
+3. **Restore the MinIO connection.** Only do this after confirming connections are blocked or invalid; renew the pool/connection and validate write and read operations. This action may interrupt in-progress uploads.
 
-## Escalamiento
+## Escalation
 
-- Avisa al responsable de `document-generation` y al equipo de plataforma/almacenamiento cuando el burn rate siga sobre el umbral tras la primera mitigación.
-- Escala al responsable de datos si PostgreSQL presenta latencia, saturación de conexiones o fallos de actualización de estado.
-- Si el presupuesto alcanza 75% o 100%, aplica el code freeze o la prioridad de resiliencia definidos en la política de Error Budget.
+- Notify the `document-generation` owner and the platform/storage team if the burn rate remains above the threshold after the first mitigation.
+- Escalate to the data owner if PostgreSQL shows latency, connection saturation, or status update failures.
+- If budget consumption reaches 75% or 100%, apply the code freeze or resilience priority defined in the Error Budget policy.
 
-## Verificación de recuperación
+## Recovery Verification
 
-- Confirma que el burn rate queda por debajo del umbral y la tasa de errores vuelve a su nivel normal durante al menos 30 minutos.
-- Comprueba que p95 vuelve a estar por debajo de 2 segundos, la cola disminuye y los documentos terminan en estado `AVAILABLE`.
-- Verifica en MinIO que los PDFs nuevos se guardan y pueden recuperarse; revisa que no queden mensajes fallidos sin reintento o documentos atascados.
-- Desactiva el feature flag de pausa de forma gradual y vigila las mismas señales.
+- Confirm that the burn rate is below the threshold and the error rate has returned to normal for at least 30 minutes.
+- Verify that p95 is below 2 seconds again, the queue is shrinking, and documents reach `AVAILABLE` status.
+- Verify that new PDFs are stored in and retrievable from MinIO; check that no failed messages remain without retries and no documents are stuck.
+- Gradually disable the pause feature flag and monitor the same signals.

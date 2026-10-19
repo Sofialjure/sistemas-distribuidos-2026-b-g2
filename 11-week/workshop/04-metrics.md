@@ -2,20 +2,20 @@
 
 ## Golden Signals
 
-| Golden Signal | Métrica Prometheus | Tipo | Consulta PromQL |
+| Golden Signal | Prometheus Metric | Type | PromQL Query |
 |---|---|---|---|
-| Latencia | `document_generation_request_duration_seconds` | Histograma | `histogram_quantile(0.95, sum by (le) (rate(document_generation_request_duration_seconds_bucket[5m])))` |
-| Errores | `document_generation_requests_total` con `status="error"` | Contador | `sum(rate(document_generation_requests_total{status="error"}[5m]))` |
-| Tráfico | `document_generation_requests_total` | Contador | `sum(rate(document_generation_requests_total[5m]))` |
-| Saturación | `document_generation_worker_queue_size` | Gauge | `max(document_generation_worker_queue_size)` |
+| Latency | `document_generation_request_duration_seconds` | Histogram | `histogram_quantile(0.95, sum by (le) (rate(document_generation_request_duration_seconds_bucket[5m])))` |
+| Errors | `document_generation_requests_total` with `status="error"` | Counter | `sum(rate(document_generation_requests_total{status="error"}[5m]))` |
+| Traffic | `document_generation_requests_total` | Counter | `sum(rate(document_generation_requests_total[5m]))` |
+| Saturation | `document_generation_worker_queue_size` | Gauge | `max(document_generation_worker_queue_size)` |
 
-La métrica de saturación alternativa es el uso del pool de conexiones a PostgreSQL, si se instrumenta como gauge.
+An alternative saturation metric is PostgreSQL connection pool usage, if instrumented as a gauge.
 
-## Cardinalidad de labels
+## Label Cardinality
 
-Mantén acotado el conjunto de valores de cada label. No uses `patient_id`, `consultation_id` ni `document_id` como labels porque cada identificador crearía series nuevas. Usa labels controladas como `status`, `route` y `method`.
+Keep the set of values for each label bounded. Do not use `patient_id`, `consultation_id`, or `document_id` as labels because each identifier would create a new time series. Use controlled labels such as `status`, `route`, and `method`.
 
-## Buckets del histograma
+## Histogram Buckets
 
-Configura los límites de `document_generation_request_duration_seconds` en segundos: `0.1`, `0.5`, `1`, `2` y `5`. Prometheus agrega el bucket infinito `+Inf` automáticamente.
+Configure the `document_generation_request_duration_seconds` boundaries in seconds: `0.1`, `0.5`, `1`, `2`, and `5`. Prometheus automatically adds the `+Inf` bucket.
 

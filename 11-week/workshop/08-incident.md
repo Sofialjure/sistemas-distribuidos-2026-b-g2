@@ -1,21 +1,23 @@
-# Incidente simulado — Lentitud de MinIO
+# Simulated Incident — MinIO Latency
 
-**Flujo:** Generate Consultation Document  
-**Ventana del incidente:** 40 minutos.  
-**Escenario:** MinIO tarda 3 segundos en responder en el 25% de las peticiones.
+**Journey:** Generate Consultation Document
 
-## Span Tree de una petición afectada
+**Incident window:** 40 minutes.
+
+**Scenario:** MinIO takes 3 seconds to respond for 25% of requests.
+
+## Span Tree for an Affected Request
 
 - Root Span: `POST /api/v1/documents` — `api-gateway` (**3500 ms**)
   - Child Span: `document-generation-api POST /api/v1/documents`
     - Child Span: `document-generation-db INSERT status=PENDING` — PostgreSQL (**50 ms**)
     - Child Span: `Upload PDF` — MinIO (**3000 ms**)
 
-El tiempo restante del span raíz incluye validación, publicación/consumo y procesamiento dentro de `document-generation-api`.
+The remaining time in the root span includes validation, publish/consume, and processing within `document-generation-api`.
 
-## Logs de una traza afectada
+## Logs from an Affected Trace
 
-Las cuatro líneas comparten `trace_id` y muestran la demora en MinIO hasta completar la carga.
+All four lines share the same `trace_id` and show the MinIO delay through upload completion.
 
 ```json
 {"timestamp":"2026-10-19T09:10:00.000Z","level":"WARN","service":"api-gateway","version":"1.0.0","environment":"prod","trace_id":"4bf92f3577b34da6a3ce929d0e0e4736","span_id":"00f067aa0ba902b7","correlation_id":"corr-incident-001","event":"document.request.received","message":"Solicitud de documento iniciada","duration_ms":0,"document_id":"doc-incident-001","consultation_id":"con-incident-001","patient_id":"pat-incident-001","status":"GENERATING"}
@@ -24,68 +26,68 @@ Las cuatro líneas comparten `trace_id` y muestran la demora en MinIO hasta comp
 {"timestamp":"2026-10-19T09:10:03.500Z","level":"INFO","service":"document-generation-api","version":"1.0.0","environment":"prod","trace_id":"4bf92f3577b34da6a3ce929d0e0e4736","span_id":"e457b5a2e4d86bd2","correlation_id":"corr-incident-001","event":"document.storage.uploaded","message":"PDF guardado en MinIO después de una respuesta lenta","duration_ms":3000,"document_id":"doc-incident-001","consultation_id":"con-incident-001","patient_id":"pat-incident-001","status":"AVAILABLE"}
 ```
 
-## SLI e impacto
+## SLI and Impact
 
-El SLI de disponibilidad observado en la simulación bajó a **98%** frente al objetivo de 99.5%. Esto consume más Error Budget que el objetivo permite. Availability cuenta respuestas exitosas frente a errores; una respuesta lenta que finalmente termina correctamente afecta el SLI de latencia, pero no el de disponibilidad. Por eso, el 98% se trata como el SLI agregado observado del periodo, no como un resultado derivado solo del 25% de cargas lentas.
+The Availability SLI observed in the simulation fell to **98%**, below the 99.5% target. This consumes more Error Budget than allowed by the objective. Availability counts successful responses versus errors; a slow response that eventually completes successfully affects the latency SLI, but not the Availability SLI. Therefore, 98% is treated as the aggregate SLI observed for the period, not as a result derived solely from the 25% of slow uploads.
 
-Con 1,000 documentos por día, el volumen esperado en 40 minutos es:
+At 1,000 documents per day, the expected volume over 40 minutes is:
 
 ```text
 1,000 / 1,440 × 40 ≈ 28 peticiones
 28 × 25% ≈ 7 peticiones lentas
 ```
 
-La fracción lenta incumple el objetivo de latencia de menos de 2 segundos. En una ventana de 30 días, availability de 98% equivale a un burn rate de `(1 - 0.98) / (1 - 0.995) = 4` y 600 errores sobre 30,000 peticiones, frente a un presupuesto de 150. El exceso frente al presupuesto es 450 peticiones fallidas equivalentes. El equivalente temporal de 98% de disponibilidad es 864 minutos de caída total en 30 días, comparado con 216 minutos permitidos.
+The slow fraction violates the latency objective of less than 2 seconds. Over a 30-day window, 98% Availability corresponds to a burn rate of `(1 - 0.98) / (1 - 0.995) = 4` and 600 errors out of 30,000 requests, compared with a budget of 150. This is 450 failed-request equivalents over budget. The time equivalent of 98% Availability is 864 minutes of total outage in 30 days, compared with the allowed 216 minutes.
 
-## Alerta
+## Alert
 
-Se dispara `DocumentGenerationFastBurn` en el minuto 10. La alerta usa la tasa de errores de una ventana de 1 hora, umbral de burn rate 14.4 y confirmación de 5 minutos. La observación del 98% a 30 días y el burn rate de una ventana corta son ventanas distintas; la condición rápida se activa por el pico de errores de la hora, no por el promedio mensual aislado.
+`DocumentGenerationFastBurn` fires at minute 10. The alert uses the error rate over a 1-hour window, a burn rate threshold of 14.4, and a 5-minute confirmation period. The 30-day observation of 98% and the short-window burn rate are different windows; the fast condition is triggered by the hourly error spike, not by the monthly average alone.
 
-## Línea de tiempo
+## Timeline
 
-| Tiempo | Evento |
+| Time | Event |
 |---|---|
-| 09:00 | Comienza la respuesta lenta de MinIO en 25% de las cargas de PDF. |
-| 09:10 | `DocumentGenerationFastBurn` se dispara tras superar el umbral y cumplir la confirmación. |
-| 09:12 | On-call confirma el aumento de latencia y agrupa trazas por `trace_id`. |
-| 09:18 | Se pausa el consumo de RabbitMQ para contener la presión sobre MinIO. |
-| 09:25 | Se identifica el cuello de botella de I/O en MinIO; se escala al equipo de almacenamiento. |
-| 09:35 | MinIO recupera latencia normal; se valida la cola y el estado de documentos. |
-| 09:40 | Se reanuda gradualmente el consumo; termina la ventana simulada de 40 minutos. |
+| 09:00 | MinIO begins responding slowly for 25% of PDF uploads. |
+| 09:10 | `DocumentGenerationFastBurn` fires after the threshold is exceeded and the confirmation period elapses. |
+| 09:12 | On-call confirms the latency increase and groups traces by `trace_id`. |
+| 09:18 | RabbitMQ consumption is paused to contain pressure on MinIO. |
+| 09:25 | The MinIO I/O bottleneck is identified; the storage team is engaged. |
+| 09:35 | MinIO latency returns to normal; the queue and document statuses are checked. |
+| 09:40 | Consumption resumes gradually; the 40-minute simulated incident window ends. |
 
-## Causa raíz y factores contribuyentes
+## Root Cause and Contributing Factors
 
-- **Causa raíz:** cuello de botella de I/O en MinIO que elevó a 3 segundos la latencia de carga para parte de las peticiones.
-- **Factores contribuyentes:** falta de un circuit breaker en la ruta de almacenamiento; capacidad de MinIO insuficiente para absorber el pico; generación y carga acopladas al procesamiento del worker; alerta de latencia no disparó antes que la alerta de burn rate.
+- **Root cause:** an I/O bottleneck in MinIO increased upload latency to 3 seconds for a portion of requests.
+- **Contributing factors:** no circuit breaker on the storage path; insufficient MinIO capacity to absorb the spike; generation and upload coupled to worker processing; the latency alert did not fire before the burn rate alert.
 
-## Postmortem sin culpables: acciones
+## Blameless Postmortem: Action Items
 
-### User Story 1 — Aislar fallos y lentitud de MinIO
+### User Story 1 — Isolate MinIO Failures and Latency
 
-Como equipo de `document-generation-api`, queremos un circuit breaker para MinIO para evitar que una dependencia lenta bloquee la generación de documentos.
+As the `document-generation-api` team, we want a circuit breaker for MinIO so that a slow dependency does not block document generation.
 
-**Criterios de aceptación:**
+**Acceptance criteria:**
 
-- Cuando la latencia o tasa de errores de MinIO supera umbrales configurados, el circuit breaker pasa a estado abierto y limita nuevas cargas.
-- Las solicitudes protegidas terminan con estado observable y no quedan workers bloqueados indefinidamente.
-- El estado del circuit breaker, los rechazos y las transiciones se registran con `trace_id` y tienen métricas y alertas.
+- When MinIO latency or error rate exceeds configured thresholds, the circuit breaker opens and limits new uploads.
+- Protected requests terminate with an observable status, and workers are not left blocked indefinitely.
+- Circuit breaker state, rejected requests, and state transitions are logged with `trace_id` and have metrics and alerts.
 
-### User Story 2 — Aumentar capacidad de almacenamiento
+### User Story 2 — Increase Storage Capacity
 
-Como equipo de plataforma, queremos agregar réplicas de MinIO y distribuir I/O para sostener la carga esperada de generación de PDFs.
+As the platform team, we want to add MinIO replicas and distribute I/O to support the expected PDF generation load.
 
-**Criterios de aceptación:**
+**Acceptance criteria:**
 
-- La topología y capacidad de réplicas se documentan y se validan con una prueba de carga representativa.
-- La prueba mantiene el p95 de carga por debajo de 2 segundos para el tráfico objetivo de 1,000 documentos por día.
-- La pérdida de una réplica no causa pérdida de PDFs confirmados ni deja documentos indefinidamente en `GENERATING`.
+- The replica topology and capacity are documented and validated with a representative load test.
+- The test keeps upload p95 below 2 seconds at the target traffic of 1,000 documents per day.
+- Losing one replica does not lose confirmed PDFs or leave documents in `GENERATING` indefinitely.
 
-### User Story 3 — Alertar sobre latencia y cola antes del agotamiento
+### User Story 3 — Alert on Latency and Queue Growth Before Budget Exhaustion
 
-Como on-call, quiero alertas sobre latencia de carga y crecimiento de RabbitMQ para actuar antes de que el burn rate llegue a nivel crítico.
+As the on-call engineer, I want alerts on upload latency and RabbitMQ growth so I can act before the burn rate reaches a critical level.
 
-**Criterios de aceptación:**
+**Acceptance criteria:**
 
-- Se mide la latencia de MinIO y el tamaño/edad de mensajes pendientes sin labels de alta cardinalidad.
-- Una prueba con latencia de MinIO de 3 segundos en 25% de las cargas activa una alerta accionable y enlazada al runbook.
-- El runbook indica cómo pausar/reanudar consumidores y cómo verificar que los documentos terminan en `AVAILABLE`.
+- MinIO latency and the size/age of pending messages are measured without high-cardinality labels.
+- A test with 3-second MinIO latency on 25% of uploads triggers an actionable alert linked to the runbook.
+- The runbook explains how to pause/resume consumers and verify that documents reach `AVAILABLE`.

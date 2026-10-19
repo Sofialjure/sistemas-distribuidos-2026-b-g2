@@ -1,34 +1,34 @@
-# Contrato de logs: Generate Consultation Document
+# Log Contract: Generate Consultation Document
 
-Cada evento se registra como un objeto JSON en una sola línea. Los campos obligatorios deben estar presentes en todos los servicios.
+Each event is logged as a single-line JSON object. The required fields must be present in every service.
 
-| Campo | Obligatorio | Descripción |
+| Field | Required | Description |
 |---|---|---|
-| `timestamp` | Sí | Fecha y hora UTC en formato ISO 8601. |
-| `level` | Sí | `ERROR`, `WARN`, `INFO` o `DEBUG`. |
-| `service` | Sí | Nombre del servicio emisor o componente worker. |
-| `version` | Sí | Versión desplegada del servicio. |
-| `environment` | Sí | Entorno de ejecución, por ejemplo `dev`, `qa` o `prod`. |
-| `trace_id` | Sí | Identificador compartido por los spans de una traza. |
-| `span_id` | Sí | Identificador del span que registra el evento. |
-| `correlation_id` | Sí | Identificador propagado entre servicios y mensajes. |
-| `event` | Sí | Nombre estable del evento para búsquedas y alertas. |
-| `message` | Sí | Resumen breve, sin datos personales ni secretos. |
-| `duration_ms` | Sí | Duración de la operación en milisegundos; `0` cuando no aplica. |
-| `document_id` | Dominio | Identificador interno del documento generado. |
-| `consultation_id` | Dominio | Identificador interno de la consulta. |
-| `patient_id` | Dominio | Identificador interno del paciente; no registrar datos personales. |
-| `status` | Dominio | Estado del documento: `PENDING`, `GENERATING`, `AVAILABLE` o `ERROR`. |
+| `timestamp` | Yes | UTC date and time in ISO 8601 format. |
+| `level` | Yes | `ERROR`, `WARN`, `INFO`, or `DEBUG`. |
+| `service` | Yes | Name of the emitting service or worker component. |
+| `version` | Yes | Deployed service version. |
+| `environment` | Yes | Runtime environment, such as `dev`, `qa`, or `prod`. |
+| `trace_id` | Yes | Identifier shared by the spans in a trace. |
+| `span_id` | Yes | Identifier of the span that records the event. |
+| `correlation_id` | Yes | Identifier propagated between services and messages. |
+| `event` | Yes | Stable event name for searches and alerts. |
+| `message` | Yes | Brief summary without personal data or secrets. |
+| `duration_ms` | Yes | Operation duration in milliseconds; `0` when not applicable. |
+| `document_id` | Domain | Internal identifier of the generated document. |
+| `consultation_id` | Domain | Internal identifier of the consultation. |
+| `patient_id` | Domain | Internal patient identifier; do not log personal data. |
+| `status` | Domain | Document status: `PENDING`, `GENERATING`, `AVAILABLE`, or `ERROR`. |
 
 ## Never log
 
-- Datos personales del paciente: nombres, documentos, correos, teléfonos, direcciones o datos clínicos.
-- Tokens, contraseñas, claves, cookies, credenciales o headers de autorización.
-- PDF, contenido de la consulta, cuerpos completos de solicitudes o mensajes que puedan incluir datos personales.
+- Patient personal data: names, identity documents, email addresses, phone numbers, addresses, or clinical data.
+- Tokens, passwords, keys, cookies, credentials, or authorization headers.
+- PDFs, consultation content, or complete request or message bodies that may contain personal data.
 
-## Ejemplos del flujo
+## Flow Examples
 
-Las cinco líneas `INFO` de éxito usan `trace_id` `trace-ok-111`. Las dos líneas `ERROR` son una ejecución separada y usan `trace_id` `trace-err-999`.
+The five successful `INFO` lines use `trace_id` `trace-ok-111`. The two `ERROR` lines are a separate execution and use `trace_id` `trace-err-999`.
 
 ```json
 {"timestamp":"2026-10-19T14:00:00.000Z","level":"INFO","service":"api-gateway","version":"1.0.0","environment":"dev","trace_id":"trace-ok-111","span_id":"00f067aa0ba902b7","correlation_id":"corr-document-ok-001","event":"document.request.received","message":"Solicitud de generación de documento recibida","duration_ms":0,"document_id":"doc-1042","consultation_id":"con-208","patient_id":"pat-17","status":"PENDING"}
