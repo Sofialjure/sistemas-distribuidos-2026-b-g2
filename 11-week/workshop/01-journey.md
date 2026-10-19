@@ -1,41 +1,51 @@
-# Schedule Appointment: distributed trace
+# Generate Consultation Document: distributed trace
 
 ## Saltos del flujo
 
-| Origen | Destino | Tipo | Propagación |
-|---|---|---|---|
-| App | `api-gateway` | HTTP síncrono | `traceparent` |
-| `api-gateway` | `appointment-scheduling-api` | HTTP síncrono | Reenvía `traceparent` |
-| `appointment-scheduling-api` | `professional-management-api` | HTTP síncrono | Reenvía `traceparent` |
-| `appointment-scheduling-api` | RabbitMQ | Publicación asíncrona | Propaga el contexto de trace en headers del mensaje |
-| RabbitMQ | `notification-service` | Consumo asíncrono | Extrae el contexto de trace de los headers del mensaje |
+| # | Origen | Destino | Operación | Tipo |
+|---|---|---|---|---|
+| 1 | Patient App | `api-gateway` | REST `POST /api/v1/documents` | Síncrono |
+| 2 | `api-gateway` | `document-generation-api` | REST `POST /api/v1/documents` | Síncrono |
+| 3 | `document-generation-api` | `document-generation-db` (PostgreSQL) | SQL `INSERT`, estado `PENDING` | Síncrono |
+| 4 | `document-generation-api` | RabbitMQ | Publicar `PostConsultationSummaryGenerated` | Asíncrono |
+| 5 | Worker | MinIO (Storage) | Subir PDF | Síncrono |
+| 6 | Worker | `document-generation-db` (PostgreSQL) | SQL `UPDATE`, estado `AVAILABLE` | Síncrono |
 
-## Secuencia
+## Diagrama de secuencia
+
+El `traceparent` conserva el mismo `trace_id`; cada servicio crea su propio `span_id`. El worker extrae el contexto propagado en los headers del mensaje RabbitMQ.
 
 ```mermaid
 sequenceDiagram
     participant App
-    participant Gateway as api-gateway
-    participant Scheduling as appointment-scheduling-api
-    participant Professional as professional-management-api
-    participant RabbitMQ
-    participant Notification as notification-service
+    participant GW as api-gateway
+    participant DocAPI as document-generation-api
+    participant DocDB as document-generation-db (PostgreSQL)
+    participant MQ as RabbitMQ
+    participant Worker
+    participant MinIO as MinIO (Storage)
 
-    App->>Gateway: POST /appointments<br/>traceparent: 00-{trace_id}-{app_span_id}-01
-    Gateway->>Scheduling: POST /appointments<br/>traceparent: 00-{trace_id}-{gateway_span_id}-01
-    Scheduling->>Professional: GET /professionals/{id}/availability<br/>traceparent: 00-{trace_id}-{scheduling_span_id}-01
-    Professional-->>Scheduling: Disponibilidad
-    Scheduling->>RabbitMQ: Publicar AppointmentScheduled<br/>header traceparent: 00-{trace_id}-{producer_span_id}-01
-    RabbitMQ-->>Notification: Entregar AppointmentScheduled<br/>header traceparent: 00-{trace_id}-{producer_span_id}-01
-    Notification-->>RabbitMQ: ACK
-    Scheduling-->>Gateway: 201 Created
-    Gateway-->>App: 201 Created
+    App->>GW: POST /api/v1/documents<br/>traceparent: 00-{trace_id}-{app_span_id}-01
+    GW->>DocAPI: POST /api/v1/documents<br/>traceparent: 00-{trace_id}-{gateway_span_id}-01
+    DocAPI->>DocDB: INSERT document, status=PENDING<br/>trace_id asociado al span SQL
+    DocDB-->>DocAPI: document_id
+    DocAPI->>MQ: Publish PostConsultationSummaryGenerated<br/>header traceparent: 00-{trace_id}-{producer_span_id}-01
+    DocAPI-->>GW: 202 Accepted
+    GW-->>App: 202 Accepted
+    MQ-->>Worker: Deliver PostConsultationSummaryGenerated<br/>extrae traceparent del mensaje
+    Worker->>MinIO: Upload PDF<br/>trace_id propagado
+    MinIO-->>Worker: object_key
+    Worker->>DocDB: UPDATE status=AVAILABLE<br/>trace_id asociado al span SQL
+    DocDB-->>Worker: Actualizado
 ```
 
 ## Span Tree
 
-- Root Span: `App POST /appointments` (`trace_id: 4bf92f3577b34da6a3ce929d0e0e4736`)
-  - Child Span: `api-gateway POST /appointments` (mismo `trace_id`)
-    - Child Span: `appointment-scheduling-api POST /appointments` (mismo `trace_id`)
-      - Child Span: `professional-management-api GET /professionals/{id}/availability` (mismo `trace_id`)
-      - Async Span: `appointment-scheduling-api publish AppointmentScheduled → RabbitMQ → notification-service consume AppointmentScheduled` (mismo `trace_id`; conserva el contexto al cruzar la cola)
+- Root Span: `Patient App POST /api/v1/documents` (`trace_id: 4bf92f3577b34da6a3ce929d0e0e4736`)
+  - Child Span: `api-gateway POST /api/v1/documents` (mismo `trace_id`)
+    - Child Span: `document-generation-api POST /api/v1/documents` (mismo `trace_id`)
+      - Child Span: `document-generation-db INSERT status=PENDING` (mismo `trace_id`)
+      - Async Producer Span: `Publish PostConsultationSummaryGenerated → RabbitMQ` (mismo `trace_id`)
+  - Async Consumer Span: `Worker consume PostConsultationSummaryGenerated` (extrae el mismo `trace_id` de los headers)
+    - Child Span: `MinIO Upload PDF` (mismo `trace_id`)
+    - Child Span: `document-generation-db UPDATE status=AVAILABLE` (mismo `trace_id`)
