@@ -18,3 +18,4 @@ Mantén acotado el conjunto de valores de cada label. No uses `patient_id`, `con
 ## Buckets del histograma
 
 Configura los límites de `document_generation_request_duration_seconds` en segundos: `0.1`, `0.5`, `1`, `2` y `5`. Prometheus agrega el bucket infinito `+Inf` automáticamente.
+
