@@ -2,8 +2,9 @@ const { traceContext } = require('./middleware');
 const { log } = require('./logger');
 
 const metrics = {
-  appointment_requests_total: 0,
-  appointment_request_duration_seconds: [],
+  document_generation_requests_total: 0,
+  document_generation_request_duration_seconds: [],
+  document_generation_worker_queue_size: 0,
 };
 
 function simulateRequest(headers = {}) {
@@ -11,14 +12,16 @@ function simulateRequest(headers = {}) {
   traceContext(req, {}, () => {});
 
   const startedAt = Date.now();
-  metrics.appointment_requests_total += 1;
+  metrics.document_generation_requests_total += 1;
+  metrics.document_generation_worker_queue_size += 1;
 
   const outboundHeaders = {
     traceparent: `00-${req.traceId}-00f067aa0ba902b7-01`,
   };
-  log('INFO', req.traceId, 'professional.availability.requested', 'Consulta HTTP simulada enviada');
+  log('INFO', req.traceId, 'document.summary.published', 'Evento PostConsultationSummaryGenerated publicado');
 
-  metrics.appointment_request_duration_seconds.push((Date.now() - startedAt) / 1000);
+  metrics.document_generation_worker_queue_size -= 1;
+  metrics.document_generation_request_duration_seconds.push((Date.now() - startedAt) / 1000);
   return { traceId: req.traceId, outboundHeaders, metrics };
 }
 
