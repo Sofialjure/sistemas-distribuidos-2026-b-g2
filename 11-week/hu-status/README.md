@@ -15,12 +15,12 @@
 | HU ID | Title | Status (todo/doing/done) | Evidence (PR or commit URL) |
 |---|---|---|---|
 | HU-16 | Download Consultation Summary as PDF | doing | Backend done and merged: [API #20](https://github.com/code-corhuila/telemed-ia-document-generation-api/pull/20), [#21](https://github.com/code-corhuila/telemed-ia-document-generation-api/pull/21), [#22](https://github.com/code-corhuila/telemed-ia-document-generation-api/pull/22), [#23](https://github.com/code-corhuila/telemed-ia-document-generation-api/pull/23), [#24](https://github.com/code-corhuila/telemed-ia-document-generation-api/pull/24), [#25](https://github.com/code-corhuila/telemed-ia-document-generation-api/pull/25). The portal still uses synthetic data. |
-| OBS-DG-01 | Golden signals of PDF generation | doing | [document-generation-api #26](https://github.com/code-corhuila/telemed-ia-document-generation-api/pull/26) |
-| OBS-DG-04 | SLO burn-rate alerts with owner and runbook | doing | [infra-postgres #22](https://github.com/code-corhuila/telemed-ia-infra-postgres/pull/22) |
-| OBS-DG-05 | Runbook for the likely incidents | doing | [docs #102](https://github.com/code-corhuila/telemed-ia-docs/pull/102) |
-| OBS-DG-02 | One trace across services | todo | Specified in [docs #102](https://github.com/code-corhuila/telemed-ia-docs/pull/102) |
-| OBS-DG-03 | Domain events in the logs | todo | Specified in [docs #102](https://github.com/code-corhuila/telemed-ia-docs/pull/102) |
-| OBS-DG-06 | Pause switch for PDF generation | todo | Specified in [docs #102](https://github.com/code-corhuila/telemed-ia-docs/pull/102) |
+| OBS-DG-01 | Golden signals of PDF generation | done | [document-generation-api #26](https://github.com/code-corhuila/telemed-ia-document-generation-api/pull/26), dashboard [infra-postgres #25](https://github.com/code-corhuila/telemed-ia-infra-postgres/pull/25) |
+| OBS-DG-02 | One trace across services | done | [document-generation-api #27](https://github.com/code-corhuila/telemed-ia-document-generation-api/pull/27), traces in Jaeger and Grafana [infra-postgres #23](https://github.com/code-corhuila/telemed-ia-infra-postgres/pull/23) |
+| OBS-DG-03 | Domain events in the logs | done | [document-generation-api #28](https://github.com/code-corhuila/telemed-ia-document-generation-api/pull/28) |
+| OBS-DG-04 | SLO burn-rate alerts with owner and runbook | done | [infra-postgres #22](https://github.com/code-corhuila/telemed-ia-infra-postgres/pull/22), routed by Alertmanager [infra-postgres #24](https://github.com/code-corhuila/telemed-ia-infra-postgres/pull/24) |
+| OBS-DG-05 | Runbook for the likely incidents | done | [docs #102](https://github.com/code-corhuila/telemed-ia-docs/pull/102), [#103](https://github.com/code-corhuila/telemed-ia-docs/pull/103), [#104](https://github.com/code-corhuila/telemed-ia-docs/pull/104), [#105](https://github.com/code-corhuila/telemed-ia-docs/pull/105) |
+| OBS-DG-06 | Pause switch for PDF generation | done | [document-generation-api #29](https://github.com/code-corhuila/telemed-ia-document-generation-api/pull/29) |
 
 ## 2. My individual contribution
 - Week 11 workshop (D1 and D2), in [11-week/workshop](../workshop):
@@ -54,6 +54,15 @@
   - each one with severity, owner and runbook;
   - unit-tested with `promtool test rules`, and verified live in Prometheus.
 - Runbook (OBS-DG-05, docs #102): confirmation queries, mitigations, escalation and recovery for each alert.
+- Distributed trace (OBS-DG-02, API #27, infra #23):
+  - W3C `traceparent` continued from the request and sent to identity and Medical Consultation;
+  - each background attempt is a child span of its request;
+  - `traceId` and `spanId` on every log line;
+  - spans exported over OTLP to the collector, stored in Jaeger and viewed in Grafana.
+- Domain events in the logs (OBS-DG-03, API #28): `document.generation.started`, `available`, `retry_scheduled`, `failed`, with `document_id`, `status`, `duration_ms` and `attempt`.
+- Pause switch (OBS-DG-06, API #29): pauses PDF generation without stopping the service, so no retry is spent while a dependency is down; gauge `document_generation_paused`.
+- Alertmanager (infra #24): groups the alerts, routes them by severity and suppresses the slow burn while the fast burn fires; alerts are viewed in Grafana.
+- Grafana dashboard (infra #25): SLOs, error budget, burn rate and golden signals, provisioned from a versioned file and checked against a real Prometheus.
 - HU-16 backend, all merged:
   - PDF generation core, status store with outbox, PDFBox renderer;
   - Medical Consultation client and background generation with retries;
@@ -61,19 +70,15 @@
   - Verified end to end with the real identity, medical consultation, PostgreSQL and RustFS services.
 
 ## 3. Blockers and risks
-- Medical Consultation still has open issues, reported with evidence to its owner:
-  - a patient can record an attention;
-  - a duplicate attention answers 500 instead of 409;
-  - internal errors expose SQL;
-  - its Dockerfile uses Go 1.23 while `go.mod` needs Go 1.25.
-- The infrastructure has no Alertmanager, so alerts are visible in Prometheus but not routed.
-- The OpenTelemetry collector only exports traces to `debug`, so traces cannot be viewed yet (needed for OBS-DG-02).
+- Medical Consultation fixed most of the issues reported with evidence. Still open, reported to its owner:
+  - a duplicate attention or post summary answers 500 instead of 409;
+  - internal errors and the `X-Correlation-Id` are not written to its log;
+  - no new tests for roles, conflicts or the transaction.
+- Jaeger keeps traces in memory, so they are lost when it restarts; enough for development.
 - GitHub Actions cannot run because of the organization's billing limit. Every check was run locally and recorded in each PR.
 
 ## 4. Plan for next week
-- OBS-DG-02: `traceparent` in and out, `traceId`/`spanId` on every log line, OTLP export to the collector.
-- OBS-DG-03: domain events in the logs (`event`, `document_id`, `status`, `duration_ms`).
-- OBS-DG-06: a pause switch for PDF generation.
+- Contract tests of Anexo C (numeral 5.3.12) for `telemed-ia-document-generation-api`.
 - Connect the Document Generation portal to the real API through the shared `apiClient`.
 - Run the end-to-end check again once Medical Consultation fixes its open issues.
 
@@ -90,4 +95,9 @@
 - Metrics in the API: https://github.com/code-corhuila/telemed-ia-document-generation-api/pull/26
 - SLO alerts in the infrastructure: https://github.com/code-corhuila/telemed-ia-infra-postgres/pull/22
 - SLOs, observability stories and runbook: https://github.com/code-corhuila/telemed-ia-docs/pull/102
+- Distributed trace: https://github.com/code-corhuila/telemed-ia-document-generation-api/pull/27 and https://github.com/code-corhuila/telemed-ia-infra-postgres/pull/23
+- Domain events in the logs: https://github.com/code-corhuila/telemed-ia-document-generation-api/pull/28
+- Pause switch: https://github.com/code-corhuila/telemed-ia-document-generation-api/pull/29
+- Alertmanager: https://github.com/code-corhuila/telemed-ia-infra-postgres/pull/24
+- Grafana dashboard: https://github.com/code-corhuila/telemed-ia-infra-postgres/pull/25
 - HU-16 backend: https://github.com/code-corhuila/telemed-ia-document-generation-api/pulls?q=is%3Apr+is%3Amerged
