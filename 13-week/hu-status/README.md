@@ -71,6 +71,27 @@
     - UUID identifiers and observability in Patient Management (patient-management-db #20, patient-management-api #27 to #29, patient-management-portal #8, #9, docs #123);
     - the appointments upstream in the gateway (api-gateway #18), and the PostgreSQL exporter (infra-postgres #29).
 
+### Week 13 - Session 1 - Optional Activity
+
+Authentication, authorization and zero trust in the two services I own, verified with **20 live probes** run from a container inside the platform network (so the calls that skip the gateway behave like a compromised neighbour):
+
+- the gateway rejects requests without a token, and **each service** rejects a forged, expired, `alg none` or edited token by itself;
+- authorization runs in the use case: a patient cannot register professionals, a professional cannot change a profile status, a patient cannot read another patient's PDF, and a service outside the allow-list cannot request PDFs;
+- the e-mail of a professional reaches administrators only; malformed input answers `400` with the error envelope and no internals;
+- **19 of 20 passed**. The one that failed is a real finding: `POST /api/documents/generate` validates the body before authorizing, so a patient gets `400` with the field list instead of `403`.
+
+See: [Week 13 - Session 1 - Optional Activity](Optional%20Activity%20Week%2013%20-%20Session%201.md)
+
+### Week 13 - Session 2 - Optional Activity
+
+Threat model and security backlog for Professional Management and Document Generation:
+
+- data flow with five trust boundaries and 15 STRIDE threats, each with its mitigation and its gap;
+- security gates run for real: **gitleaks** over the full history of my six repositories (1,783 commits, 0 findings, with a positive control) and **trivy** over the API image (no HIGH/CRITICAL in the OS packages; 33 in Java libraries of the Spring Boot 3.5.6 set, most fixed by the latest 3.5.x patch);
+- a prioritized backlog of nine stories (SEC-01 to SEC-09) with testable acceptance criteria, and the CI gates that will fail the build once Actions can run.
+
+See: [Week 13 - Session 2 - Optional Activity](Optional%20Activity%20Week%2013%20-%20Session%202.md)
+
 ## 3. Blockers and risks
 - GitHub Actions cannot run because of the organization's billing limit. Every check was run locally and recorded in each PR (for example, 338 tests in document-generation-api and 181 in professional-management-api, with real PostgreSQL, RustFS and RabbitMQ).
 - The promotion from `qa` to `main` needs the professor's approval (norm); it has not started.
@@ -88,6 +109,7 @@
 - [x] No secrets; config via environment variables
 
 ## 6. Evidence links
+- Optional activities: [Session 1](Optional%20Activity%20Week%2013%20-%20Session%201.md), [Session 2](Optional%20Activity%20Week%2013%20-%20Session%202.md)
 - Common event contract: https://github.com/code-corhuila/telemed-ia-document-generation-api/pull/35 and https://github.com/code-corhuila/telemed-ia-docs/pull/119
 - E-mail only for administrators: https://github.com/code-corhuila/telemed-ia-docs/pull/120 and https://github.com/code-corhuila/telemed-ia-professional-management-api/pull/39
 - Newest first: https://github.com/code-corhuila/telemed-ia-docs/pull/122, https://github.com/code-corhuila/telemed-ia-professional-management-db/pull/35 and https://github.com/code-corhuila/telemed-ia-professional-management-api/pull/42
