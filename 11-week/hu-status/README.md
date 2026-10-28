@@ -129,6 +129,7 @@ See: [Week 11 - Session 2 - Optional Activity](Optional%20Activity%20Week%2011%2
 
 ## 6. Evidence links
 - Optional activities: [Session 1](Optional%20Activity%20Week%2011%20-%20Session%201.md), [Session 2](Optional%20Activity%20Week%2011%20-%20Session%202.md)
+- Scripts used in the optional activities: [scripts](scripts/README.md)
 - Workshop: [01-journey](../workshop/01-journey.md), [02-log-contract](../workshop/02-log-contract.md), [03-instrumentation](../workshop/03-instrumentation), [04-metrics](../workshop/04-metrics.md), [05-slo](../workshop/05-slo.md), [06-alerts.yml](../workshop/06-alerts.yml), [07-runbook](../workshop/07-runbook.md), [08-incident](../workshop/08-incident.md)
 - Metrics in the API: https://github.com/code-corhuila/telemed-ia-document-generation-api/pull/26
 - SLO alerts in the infrastructure: https://github.com/code-corhuila/telemed-ia-infra-postgres/pull/22

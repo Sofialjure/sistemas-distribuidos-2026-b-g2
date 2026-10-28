@@ -135,6 +135,7 @@ request's `correlationId` is stored in the `outbox_event` row and travels with
 
 | What | Where |
 |---|---|
+| Scripts to repeat the queries and the trace read | [scripts](scripts/README.md): `golden-signals.sh`, `trace-summary.py` |
 | Metrics and traces, Professional Management | [professional-management-api #48](https://github.com/code-corhuila/telemed-ia-professional-management-api/pull/48) |
 | Domain events and outcome counters | [professional-management-api #50](https://github.com/code-corhuila/telemed-ia-professional-management-api/pull/50) |
 | Metrics, Document Generation | [document-generation-api #26](https://github.com/code-corhuila/telemed-ia-document-generation-api/pull/26) |

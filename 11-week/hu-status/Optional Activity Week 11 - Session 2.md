@@ -143,6 +143,7 @@ sustained failures; a short burst is visible in the logs and the counter.
 
 | What | Where |
 |---|---|
+| Script of the drill | [scripts/identity-down-drill.sh](scripts/identity-down-drill.sh) |
 | SLOs, budget policy, alerts, stories and drill (Professional Management) | [telemed-ia-docs #125](https://github.com/code-corhuila/telemed-ia-docs/pull/125) |
 | Runbook with one section per alert | [telemed-ia-docs #124](https://github.com/code-corhuila/telemed-ia-docs/pull/124), [#125](https://github.com/code-corhuila/telemed-ia-docs/pull/125) |
 | Alert rules, `promtool` tests and dashboard | [infra-postgres #30](https://github.com/code-corhuila/telemed-ia-infra-postgres/pull/30) |
