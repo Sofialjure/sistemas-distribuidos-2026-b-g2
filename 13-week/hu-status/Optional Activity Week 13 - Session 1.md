@@ -133,6 +133,7 @@ as a decision for the team, not as a defect.
 
 | What | Where |
 |---|---|
+| Scripts of the probes | [scripts](scripts/README.md): `mint-tokens.sh`, `probes.sh` |
 | RS256 validation in each service | [professional-management-api #13](https://github.com/code-corhuila/telemed-ia-professional-management-api/pull/13), [document-generation-api #9](https://github.com/code-corhuila/telemed-ia-document-generation-api/pull/9) |
 | Service tokens and allow-lists | [document-generation-api #25](https://github.com/code-corhuila/telemed-ia-document-generation-api/pull/25), [#31](https://github.com/code-corhuila/telemed-ia-document-generation-api/pull/31), [professional-management-api #23](https://github.com/code-corhuila/telemed-ia-professional-management-api/pull/23) |
 | Property-level authorization (e-mail only for ADMIN) | [professional-management-api #39](https://github.com/code-corhuila/telemed-ia-professional-management-api/pull/39), [telemed-ia-docs #120](https://github.com/code-corhuila/telemed-ia-docs/pull/120) |

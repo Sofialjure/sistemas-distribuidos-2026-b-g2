@@ -154,6 +154,7 @@ view (20 probes, 19 pass, the failing one is SEC-05).
 
 | What | Where |
 |---|---|
+| Script of the secret and dependency scans | [scripts/security-scans.sh](scripts/security-scans.sh) |
 | Live security probes | [Optional Activity Week 13 - Session 1](Optional%20Activity%20Week%2013%20-%20Session%201.md) |
 | Readiness finding | [Optional Activity Week 12 - Session 1](../../12-week/hu-status/Optional%20Activity%20Week%2012%20-%20Session%201.md) |
 | E-mail only for administrators (T6) | [professional-management-api #39](https://github.com/code-corhuila/telemed-ia-professional-management-api/pull/39) |

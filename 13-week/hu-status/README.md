@@ -110,6 +110,7 @@ See: [Week 13 - Session 2 - Optional Activity](Optional%20Activity%20Week%2013%2
 
 ## 6. Evidence links
 - Optional activities: [Session 1](Optional%20Activity%20Week%2013%20-%20Session%201.md), [Session 2](Optional%20Activity%20Week%2013%20-%20Session%202.md)
+- Scripts used in the optional activities: [scripts](scripts/README.md)
 - Common event contract: https://github.com/code-corhuila/telemed-ia-document-generation-api/pull/35 and https://github.com/code-corhuila/telemed-ia-docs/pull/119
 - E-mail only for administrators: https://github.com/code-corhuila/telemed-ia-docs/pull/120 and https://github.com/code-corhuila/telemed-ia-professional-management-api/pull/39
 - Newest first: https://github.com/code-corhuila/telemed-ia-docs/pull/122, https://github.com/code-corhuila/telemed-ia-professional-management-db/pull/35 and https://github.com/code-corhuila/telemed-ia-professional-management-api/pull/42
