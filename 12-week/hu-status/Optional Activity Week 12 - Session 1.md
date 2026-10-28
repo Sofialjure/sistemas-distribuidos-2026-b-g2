@@ -127,6 +127,7 @@ The old version stayed running the whole time, so the rollback is the same one-f
 
 | What | Where |
 |---|---|
+| Scripts and nginx configuration of the release | [scripts](scripts/README.md): `start.sh`, `rollout.sh`, `gate-test.sh`, `lb/` |
 | Dockerfile and compose of the service | [professional-management-api #18](https://github.com/code-corhuila/telemed-ia-professional-management-api/pull/18), [#22](https://github.com/code-corhuila/telemed-ia-professional-management-api/pull/22), [#45](https://github.com/code-corhuila/telemed-ia-professional-management-api/pull/45) |
 | Management port with health and metrics | [professional-management-api #48](https://github.com/code-corhuila/telemed-ia-professional-management-api/pull/48) |
 | Released commit | [`eeb08c7`](https://github.com/code-corhuila/telemed-ia-professional-management-api/commit/eeb08c7) |

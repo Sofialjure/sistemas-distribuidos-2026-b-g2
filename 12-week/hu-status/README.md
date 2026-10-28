@@ -108,6 +108,7 @@ See: [Week 12 - Session 2 - Optional Activity](Optional%20Activity%20Week%2012%2
 
 ## 6. Evidence links
 - Optional activities: [Session 1](Optional%20Activity%20Week%2012%20-%20Session%201.md), [Session 2](Optional%20Activity%20Week%2012%20-%20Session%202.md)
+- Scripts used in the optional activities: [scripts](scripts/README.md)
 - Professional Management database: https://github.com/code-corhuila/telemed-ia-professional-management-db/pull/31 and https://github.com/code-corhuila/telemed-ia-professional-management-db/pull/32
 - Professional Management API: https://github.com/code-corhuila/telemed-ia-professional-management-api/pulls?q=is%3Apr+is%3Amerged
   - registration through the identity service: https://github.com/code-corhuila/telemed-ia-professional-management-api/pull/23
