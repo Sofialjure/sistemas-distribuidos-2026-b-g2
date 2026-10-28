@@ -64,6 +64,28 @@
     - I tested it end to end: the bootstrap admin registers a professional, and the professional signs in with the temporary password.
   - **Reviews:** Juliana reviewed and approved my gateway routes (api-gateway #15, #16), the profile status (docs #110, professional-management-api #21, professional-management-portal #7) and the shell remote (front #38).
 
+### Week 12 - Session 1 - Optional Activity
+
+Zero-downtime deployment of `professional-management-api` on a production-like host (the whole platform in containers), with blue-green and health checks:
+
+- the new version was built once from `develop` and tagged with its commit (`eeb08c7`), and ran next to the live one with the same configuration;
+- an nginx front door switches the active color with a graceful reload; every response says which version served it;
+- three releases and three rollbacks under continuous authenticated traffic: **746 requests, 0 failures**, switch in 1.61 s and rollback in 1.35 s;
+- the health gate found a real problem: `/health` answers `UP` even when the database is unreachable, while `/actuator/health` on the management port answers `503`. The gate now uses the actuator, and a version started with a wrong database was refused.
+
+See: [Week 12 - Session 1 - Optional Activity](Optional%20Activity%20Week%2012%20-%20Session%201.md)
+
+### Week 12 - Session 2 - Optional Activity
+
+Deployment plan for MVP 3 of my two domains:
+
+- artifact promotion: one image per commit; because every promotion to `qa` leaves the same tree as `develop`, the tested image is promoted instead of rebuilt;
+- what is already infrastructure as code (platform compose, instance bootstrap, Liquibase changelogs, Dockerfiles, environment examples, alert rules) and the gap that remains;
+- blue-green for the APIs and portals, expand/contract for the schema so a rollback never needs a schema rollback;
+- the rehearsed, timed rollback, and seven deployment stories with testable acceptance criteria.
+
+See: [Week 12 - Session 2 - Optional Activity](Optional%20Activity%20Week%2012%20-%20Session%202.md)
+
 ## 3. Blockers and risks
 - GitHub Actions cannot run because of the organization's billing limit. Every check was run locally and recorded in each PR (for example 336 tests in document-generation-api and 152 in professional-management-api, with real PostgreSQL, RustFS and RabbitMQ).
 - `qa` and `main` still hold older versions of the six repositories; the next promotions go through the review of `main`.
@@ -85,6 +107,7 @@
 - [x] No secrets; config via environment variables
 
 ## 6. Evidence links
+- Optional activities: [Session 1](Optional%20Activity%20Week%2012%20-%20Session%201.md), [Session 2](Optional%20Activity%20Week%2012%20-%20Session%202.md)
 - Professional Management database: https://github.com/code-corhuila/telemed-ia-professional-management-db/pull/31 and https://github.com/code-corhuila/telemed-ia-professional-management-db/pull/32
 - Professional Management API: https://github.com/code-corhuila/telemed-ia-professional-management-api/pulls?q=is%3Apr+is%3Amerged
   - registration through the identity service: https://github.com/code-corhuila/telemed-ia-professional-management-api/pull/23
