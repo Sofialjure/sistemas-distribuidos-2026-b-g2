@@ -69,6 +69,43 @@
   - service token from the identity service.
   - Verified end to end with the real identity, medical consultation, PostgreSQL and RustFS services.
 
+### Week 11 - Session 1 - Optional Activity
+
+Observability (logs, metrics and distributed tracing) shown in the real services I own, on the platform running all the TeleMed IA services in containers:
+
+- one JSON log line per event with `traceId`, `spanId` and `correlationId`, and a log contract with the domain events of both services (no personal or clinical data);
+- the golden signals mapped to real metrics on the internal management port, with values read from Prometheus;
+- a real trace from Jaeger: a list of professionals of 508 ms, of which 106 ms were the service-token call to identity and 21 ms the names call.
+
+See: [Week 11 - Session 1 - Optional Activity](Optional%20Activity%20Week%2011%20-%20Session%201.md)
+
+### Week 11 - Session 2 - Optional Activity
+
+SLOs, error budget, alerting and runbook for Professional Management and Document Generation:
+
+- SLOs over 30 days: availability 99.5% and read latency (95% within 500 ms) for professionals; availability, latency and freshness for documents;
+- error budget (750 requests or 216 minutes a month for professionals; 150 documents for PDFs) and a 50/75/100% policy;
+- multi-window burn-rate alerts with severity, owner and runbook, unit-tested with `promtool`, routed by Alertmanager;
+- a runbook for the likely incident (identity down) and the observability stories with Given/When/Then criteria;
+- a drill: identity stopped for 2.5 minutes, the 1h burn rate reached 168 and the page fired after 5 minutes.
+
+See: [Week 11 - Session 2 - Optional Activity](Optional%20Activity%20Week%2011%20-%20Session%202.md)
+
+### Group contribution
+
+- **Juliana (@JulianaFerro1428):**
+  - service tokens for service-to-service calls (identity-and-access-api #117), which my Document Generation API uses to read Medical Consultation;
+  - identity publishes only its management port and answers `400` to a malformed body (#118, #119), two issues I reported with evidence;
+  - the intelligent agent end to end: persistence in agent-db, outbox in the same transaction, HTTP endpoints, appointment check with the patient's token, idempotent start (intelligent-agent-api #12 to #27), and its portal on the real API (intelligent-agent-portal #39 to #43);
+  - the week 11 structured logs and metrics of the agent (intelligent-agent-api #28, #29) and its gateway route (api-gateway #13).
+- **José Miguel (@BondrewdXD):**
+  - Medical Consultation identifiers moved to UUID (medical-consultation-api #8, medical-consultation-db #5), which unblocked my PDF generation;
+  - roles and the `followUp` contract (#9), and three QA rounds (#10, #12, #13) on the issues I found in the end-to-end runs;
+  - Prometheus metrics for Medical Consultation (#11, infra-postgres #21) and the grants that let its migrations run on the shared instance (infra-postgres #19);
+  - appointment slot conflicts in database, API, portal and docs (appointment-scheduling-db #5, appointment-scheduling-api #16, appointment-scheduling-portal #18, docs #100);
+  - ADR-022 on service-to-service authentication (docs #101).
+- **My part in the team work:** I ran the cross-service journey (identity → Medical Consultation → Document Generation → RustFS) after each of their changes and reported every reproducible failure with its request and log line.
+
 ## 3. Blockers and risks
 - Medical Consultation fixed most of the issues reported with evidence. Still open, reported to its owner:
   - a duplicate attention or post summary answers 500 instead of 409;
@@ -91,6 +128,7 @@
 - [x] No secrets; config via environment variables
 
 ## 6. Evidence links
+- Optional activities: [Session 1](Optional%20Activity%20Week%2011%20-%20Session%201.md), [Session 2](Optional%20Activity%20Week%2011%20-%20Session%202.md)
 - Workshop: [01-journey](../workshop/01-journey.md), [02-log-contract](../workshop/02-log-contract.md), [03-instrumentation](../workshop/03-instrumentation), [04-metrics](../workshop/04-metrics.md), [05-slo](../workshop/05-slo.md), [06-alerts.yml](../workshop/06-alerts.yml), [07-runbook](../workshop/07-runbook.md), [08-incident](../workshop/08-incident.md)
 - Metrics in the API: https://github.com/code-corhuila/telemed-ia-document-generation-api/pull/26
 - SLO alerts in the infrastructure: https://github.com/code-corhuila/telemed-ia-infra-postgres/pull/22
