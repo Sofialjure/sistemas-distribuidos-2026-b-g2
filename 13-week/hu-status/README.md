@@ -103,6 +103,13 @@ Boundary: `telemed-ia-worker` → `document-generation-api` (`POST /api/document
 - CP4: `security.yml` (gitleaks, OWASP dependency-check, negative authorization tests) and a negative test for #149: a `SERVICE` token of another client gets `403` ([04-security-ci](../workshop/04-security-ci/HOW-TO-RUN.md)).
 - CP5: review comment on the STRIDE of @JulianaFerro1428 ([docs #148](https://github.com/code-corhuila/telemed-ia-docs/pull/148)): the per-account lock opens a lockout threat, and `/refresh` is missing.
 
+Final delivery:
+
+- CP6: review answered on [docs #144](https://github.com/code-corhuila/telemed-ia-docs/pull/144) ([cdf8c71](https://github.com/code-corhuila/telemed-ia-docs/commit/cdf8c71)): accepted the review of @JulianaFerro1428 (rate limit and logging per `clientId` on `POST /internal/service-token`, added to the S row and to #149); kept the I row after the review of @BondrewdXD, with the reason (the portals need the `400` field details; authorizing first already hides them from unauthorized callers).
+- CP7: the three stories refined with automated criteria only; #149 related to #139 and #150 related to #154 instead of duplicating ([5aa6a71](https://github.com/Sofialjure/sistemas-distribuidos-2026-b-g2/commit/5aa6a71)).
+- CP8: the negative test ran against `document-generation-api` built from `develop`: a `SERVICE` token with `sub: notifications` got `403`, the `worker` token got `201` as positive control, `Tests run: 1, Failures: 0`; `security.yml` passed actionlint 1.7.7 with 0 errors ([8d66add](https://github.com/Sofialjure/sistemas-distribuidos-2026-b-g2/commit/8d66add)).
+- CP9: implementation plan written in the reflection document.
+
 See: [workshop folder](../workshop/README.md)
 
 ## 3. Blockers and risks
