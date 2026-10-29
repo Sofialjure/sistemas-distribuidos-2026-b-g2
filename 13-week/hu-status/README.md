@@ -92,6 +92,19 @@ Threat model and security backlog for Professional Management and Document Gener
 
 See: [Week 13 - Session 2 - Optional Activity](Optional%20Activity%20Week%2013%20-%20Session%202.md)
 
+### Week 13 - Guided workshop (threat modeling), in class
+
+Boundary: `telemed-ia-worker` → `document-generation-api` (`POST /api/documents/generate` with a `SERVICE` token). Book: Tanenbaum & van Steen, *Sistemas distribuidos: principios y paradigmas*, 2.ª ed., 2008 (CORHUILA library, 005.4476 T15D ej. 1), chapter 9.
+
+- CP0: boundary claimed in [docs #141](https://github.com/code-corhuila/telemed-ia-docs/issues/141); workshop folder started ([3aa23c0](https://github.com/Sofialjure/sistemas-distribuidos-2026-b-g2/commit/3aa23c0)).
+- CP1: data flow of the whole platform with six trust boundaries, assets of the document domain and entry points of my boundary ([8a2cac3](https://github.com/Sofialjure/sistemas-distribuidos-2026-b-g2/commit/8a2cac3)).
+- CP2: STRIDE with six threats, risk ranking, residual risk and references, in [docs #144](https://github.com/code-corhuila/telemed-ia-docs/pull/144) (two pushes). Highest risk: a forged or stolen `sub: worker` token (S, 6).
+- CP3: three security stories on the team board: [#149](https://github.com/code-corhuila/telemed-ia-docs/issues/149) (S, P0), [#150](https://github.com/code-corhuila/telemed-ia-docs/issues/150) (D, P1), [#151](https://github.com/code-corhuila/telemed-ia-docs/issues/151) (E, P1) ([88d247a](https://github.com/Sofialjure/sistemas-distribuidos-2026-b-g2/commit/88d247a)).
+- CP4: `security.yml` (gitleaks, OWASP dependency-check, negative authorization tests) and a negative test for #149: a `SERVICE` token of another client gets `403` ([04-security-ci](../workshop/04-security-ci/HOW-TO-RUN.md)).
+- CP5: review comment on the STRIDE of @JulianaFerro1428 ([docs #148](https://github.com/code-corhuila/telemed-ia-docs/pull/148)): the per-account lock opens a lockout threat, and `/refresh` is missing.
+
+See: [workshop folder](../workshop/README.md)
+
 ## 3. Blockers and risks
 - GitHub Actions cannot run because of the organization's billing limit. Every check was run locally and recorded in each PR (for example, 338 tests in document-generation-api and 181 in professional-management-api, with real PostgreSQL, RustFS and RabbitMQ).
 - The promotion from `qa` to `main` needs the professor's approval (norm); it has not started.
