@@ -13,7 +13,7 @@ Threat model of one trust boundary of TeleMed IA: the asynchronous call from
 - REFLECTION_DOC: https://docs.google.com/document/d/1Ba2hON0soqgBYlmok7cQUmLyJmrle24H9ksZInrC6lU/edit
 - LIBRARY_BOOK: Tanenbaum, A. S. & van Steen, M. Sistemas distribuidos: principios y paradigmas, 2.a ed., Pearson Prentice Hall, 2008, call number 005.4476 T15D ej. 1
 - LIBRARY_RECORD_TIME: 2026-10-29 07:50
-- STORIES: https://github.com/code-corhuila/telemed-ia-docs/issues/149, https://github.com/code-corhuila/telemed-ia-docs/issues/150, https://github.com/code-corhuila/telemed-ia-docs/issues/151
+- STORIES: https://github.com/code-corhuila/telemed-ia-docs/issues/149 (S, risk 6, P0), https://github.com/code-corhuila/telemed-ia-docs/issues/150 (D, risk 4, P1, related to #154), https://github.com/code-corhuila/telemed-ia-docs/issues/151 (E, risk 4, P1)
 <!-- CONFIG-END -->
 
 | File | Checkpoint |
