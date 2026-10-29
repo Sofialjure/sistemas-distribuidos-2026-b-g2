@@ -47,7 +47,7 @@ flowchart LR
   AGT --> MG
   AUTH & PAT & PRO & APP & CON & NOT --> PG
 
-  linkStyle 10 stroke:#d00,stroke-width:4px
+  linkStyle 14 stroke:#d00,stroke-width:4px
 ```
 
 | Id | Boundary | Owner |
