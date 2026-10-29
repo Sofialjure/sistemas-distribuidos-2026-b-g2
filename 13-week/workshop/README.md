@@ -22,3 +22,4 @@ Threat model of one trust boundary of TeleMed IA: the asynchronous call from
 | `01-attack-surface.md` | CP1 |
 | STRIDE: https://github.com/code-corhuila/telemed-ia-docs/pull/144 | CP2 |
 | Security stories #149, #150, #151 | CP3 |
+| `04-security-ci/` (workflow, negative test, how to run) | CP4 |

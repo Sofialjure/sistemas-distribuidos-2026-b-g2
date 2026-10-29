@@ -1,0 +1,64 @@
+# Proposed security gates for telemed-ia-document-generation-api (Java 21, Maven multi-module).
+# Lives in the workshop folder of the fork; it is not yet in the team repository.
+name: security
+
+on:
+  pull_request:
+    branches: [develop, qa, main]
+
+permissions:
+  contents: read
+
+jobs:
+  secrets:
+    name: Secret scan (gitleaks)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: gitleaks over the full history
+        run: |
+          docker run --rm -v "$PWD:/repo:ro" zricethezav/gitleaks:v8.21.2 \
+            git /repo --no-banner --redact --exit-code 1
+
+  dependencies:
+    name: Dependency audit (OWASP dependency-check)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+      - name: Fail on HIGH or CRITICAL (CVSS >= 7)
+        env:
+          NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
+        run: |
+          mvn -B org.owasp:dependency-check-maven:12.1.0:aggregate \
+            -DfailBuildOnCVSS=7 -DnvdApiKey="$NVD_API_KEY" -Dformats=HTML,JSON
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: dependency-check-report
+          path: target/dependency-check-report.*
+
+  authorization:
+    name: Negative authorization tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+      - name: Requests that must be rejected
+        run: |
+          mvn -B -pl document-generation-app -am test \
+            -Dtest='GenerateDocumentAuthorizationTest,DocumentServiceContractTest' \
+            -Dsurefire.failIfNoSpecifiedTests=false
