@@ -22,6 +22,7 @@
 |---|---|---|---|
 | 2026-11-03 | 1.5 | Enrollment, Pre-class Guidance, Chapter 1 | evidence/00-enrollment.png, evidence/01-chapter-01.png |
 | 2026-11-04 | 2 | Chapters 2 and 3 | evidence/02-chapter-02.png, evidence/03-chapter-03.png |
+| 2026-11-04 | 2.5 | Chapter 4 | evidence/04-chapter-04.png |
 | Total | <sum> | | |
 
 ## Labs
