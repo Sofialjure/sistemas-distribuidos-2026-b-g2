@@ -25,6 +25,7 @@
 | 2026-11-04 | 2.5 | Chapter 4 | evidence/04-chapter-04.png |
 | 2026-11-05 | 1.5 | Chapter 5 | evidence/05-chapter-05.png |
 | 2026-11-05 | 1 | Chapter 6 | evidence/06-chapter-06.png |
+| 2026-11-06 | 1 | Chapter 7 | evidence/07-chapter-07.png |
 | Total | <sum> | | |
 
 ## Labs
