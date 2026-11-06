@@ -1,0 +1,87 @@
+# .github/workflows/ci.yml of a service repository, path-filtered: code changes run every gate,
+# deployment changes rebuild and smoke test the image, documentation-only changes skip the build.
+# The job `pipeline` is the single required status check of the branch protection.
+name: CI
+
+on:
+  pull_request:
+    branches: [develop, qa, main]
+
+permissions:
+  contents: read
+
+jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      code: ${{ steps.filter.outputs.code }}
+      deploy: ${{ steps.filter.outputs.deploy }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: filter
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            code:
+              - '*-core/**'
+              - '*-adapters/**'
+              - '*-app/**'
+              - 'pom.xml'
+            deploy:
+              - 'deploy/**'
+              - '.github/workflows/**'
+
+  gates:
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
+    uses: ./.github/workflows/java-service-gates.yml
+    with:
+      db-repository: code-corhuila/telemed-ia-document-generation-db
+      app-user: document_generation_app
+      changelog-table: databasechangelog_document_generation
+      needs-storage: true
+      needs-broker: true
+
+  contract:
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
+    name: Recorded interactions still follow the contracts in telemed-ia-docs
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with: { repository: code-corhuila/telemed-ia-docs, ref: main }
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - run: pip install jsonschema==4.23.0 pyyaml==6.0.2
+      - run: |
+          python .github/scripts/contract-check.py 07-api/contracts/openapi 07-api/contracts/interactions \
+            --only document-service.yaml consultation-service.yaml
+
+  image-and-smoke:
+    needs: changes
+    if: needs.changes.outputs.code == 'true' || needs.changes.outputs.deploy == 'true'
+    name: Image builds and passes the smoke test
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with: { repository: code-corhuila/telemed-ia-document-generation-db, ref: develop, path: db }
+      - run: docker build -f deploy/Dockerfile -t service:pr .
+      - name: Start the image with PostgreSQL and the domain migrations, then smoke test it
+        run: |
+          bash .github/scripts/smoke-stack.sh service:pr "$PWD/db" document_generation_app             databasechangelog_document_generation /api/documents document_generation_ PATIENT
+
+  pipeline:
+    name: pipeline
+    if: always()
+    needs: [changes, gates, contract, image-and-smoke]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Every needed job passed; the others were skipped by the path filter
+        run: |
+          [ "${{ needs.changes.result }}" = success ] || exit 1
+          for r in "${{ needs.gates.result }}" "${{ needs.contract.result }}" "${{ needs.image-and-smoke.result }}"; do
+            case "$r" in success|skipped) ;; *) exit 1 ;; esac
+          done

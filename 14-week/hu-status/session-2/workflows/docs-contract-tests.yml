@@ -1,0 +1,68 @@
+# .github/workflows/contract-tests.yml of telemed-ia-docs. A PR that changes a contract or a
+# recorded interaction runs the cross-service contract check of the services it touches only.
+name: contract-tests
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '07-api/contracts/openapi/**'
+      - '07-api/contracts/interactions/**'
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      contracts: ${{ steps.filter.outputs.changes }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: filter
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            document-service.yaml:
+              - '07-api/contracts/openapi/document-service.yaml'
+              - '07-api/contracts/openapi/_shared.yaml'
+              - '07-api/contracts/interactions/*document-service*.json'
+            professional-service.yaml:
+              - '07-api/contracts/openapi/professional-service.yaml'
+              - '07-api/contracts/openapi/_shared.yaml'
+              - '07-api/contracts/interactions/*professional-service*.json'
+            consultation-service.yaml:
+              - '07-api/contracts/openapi/consultation-service.yaml'
+              - '07-api/contracts/openapi/_shared.yaml'
+              - '07-api/contracts/interactions/*consultation-service*.json'
+
+  contract:
+    needs: changes
+    if: needs.changes.outputs.contracts != '[]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    strategy:
+      fail-fast: false
+      matrix:
+        contract: ${{ fromJSON(needs.changes.outputs.contracts) }}
+    name: contract ${{ matrix.contract }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - run: pip install jsonschema==4.23.0 pyyaml==6.0.2
+      - run: |
+          python .github/scripts/contract-check.py 07-api/contracts/openapi 07-api/contracts/interactions \
+            --only "${{ matrix.contract }}"
+
+  gates:
+    name: gates
+    if: always()
+    needs: [changes, contract]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Contract jobs passed or were not needed
+        run: |
+          [ "${{ needs.changes.result }}" = success ] || exit 1
+          case "${{ needs.contract.result }}" in success|skipped) ;; *) exit 1 ;; esac
