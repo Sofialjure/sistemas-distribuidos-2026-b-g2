@@ -45,6 +45,20 @@
     - after the platform run, the consultation migration restored and its change moved to `V015` (medical-consultation-db #9), the outbox flow of consultations (medical-consultation-api #23), the consultation portal paths (medical-consultation-portal #6), the `start_period` of RabbitMQ and a dead-letter replay in the worker (worker #12, #13), the `422` for a reused `Idempotency-Key` in appointments (appointment-scheduling-api #24) and the shell proxy (front #44);
     - the review answers of his STRIDE (docs #156).
 
+### Week 14 - What we covered and what I learned
+
+![Image Week 14 - Session 01 - CI-CD - Pipelines & Quality Gates](Image%20Week%2014%20-%20Session%2001%20-%20CI-CD%20-%20Pipelines%20%26%20Quality%20Gates.png)
+
+**Session 1 — CI/CD: pipelines and quality gates.** This week we distinguished continuous integration, continuous delivery (every green build is releasable) and continuous deployment (every green build goes to production), and saw the pipeline as the enforcer: build, lint and type check, tests, coverage, security, package and deploy, where every gate must pass or the merge is blocked. We also saw trunk-based flow with PR checks and a protected main, the four DORA metrics (deployment frequency, lead time for changes, change failure rate and time to restore), and the real-life case of the broken main that blocks the whole team.
+
+What I learned: a gate that only warns is ignored; it has to block. When I ran every gate on my four repositories, the tests, coverage and secrets passed, but lint and the dependency scan failed for real reasons (two non-exhaustive switches; 45 and 35 vulnerable libraries in the API jars), and the image scan correctly stopped the release.
+
+![Image Week 14 - Session 02 - Planning - CI-CD Pipeline, DoD Gates & Branch Protection](Image%20Week%2014%20-%20Session%2002%20-%20Planning%20-%20CI-CD%20Pipeline%2C%20DoD%20Gates%20%26%20Branch%20Protection.png)
+
+**Session 2 — Planning: the pipeline, the DoD as gates and branch protection.** We saw how each Definition of Done item becomes an automated gate that can reject a change (linter, type check, tests, coverage floor, secret and dependency scans, smoke test), how branch protection makes the gates unavoidable (no direct pushes, required status checks, required review, up-to-date branches), how to design the pipeline for many services (one gated pipeline per service and a shared release that promotes the green, tagged images), and how to slice the CI/CD stories of MVP 3. The real-life case was "just merge it": disabling a failing gate to merge.
+
+What I learned: a pipeline you can bypass is theater. Reading the real protection of my repositories showed that no branch requires a status check and `develop`/`qa` require no approval, and the cross-service contract tests found a real drift between the consultation contract and its implementation.
+
 ### Week 14 - Session 1 - Optional Activity
 
 CI/CD for the four code repositories I own (two APIs, two portals), with **every gate run for real** on fresh clones of `develop` (Actions cannot run in the organization, so each job's exact commands were executed locally with the same service containers):
