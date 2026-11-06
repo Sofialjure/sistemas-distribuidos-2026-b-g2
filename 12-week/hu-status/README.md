@@ -64,6 +64,20 @@
     - I tested it end to end: the bootstrap admin registers a professional, and the professional signs in with the temporary password.
   - **Reviews:** Juliana reviewed and approved my gateway routes (api-gateway #15, #16), the profile status (docs #110, professional-management-api #21, professional-management-portal #7) and the shell remote (front #38).
 
+### Week 12 - What we covered and what I learned
+
+![Image Week 12 - Session 01 - Cloud Deployment - Models, Strategies & Zero-Downtime](Image%20Week%2012%20-%20Session%2001%20-%20Cloud%20Deployment%20-%20Models%2C%20Strategies%20%26%20Zero-Downtime.png)
+
+**Session 1 — Cloud deployment: models, strategies and zero downtime.** This week we compared the deployment models by how much we manage (IaaS, containers/Kubernetes, PaaS, serverless), the rule "build once, deploy the artifact" (the image tested in QA is the one that reaches production), and the zero-downtime strategies: rolling, blue-green and canary. We also saw horizontal scaling with stateless services, health checks and auto-restart, and the real-life case of the manual Friday deploy over SSH that nobody can reproduce.
+
+What I learned: a deployment is only safe if a health check can refuse a bad version, and the check must test what really matters. In my blue-green rehearsal of the professional API (746 requests, 0 failures, switch in 1.61 s, rollback in 1.35 s), `/health` said `UP` with the database down, so the gate had to use the actuator health instead.
+
+![Image Week 12 - Session 02 - Planning - Deployment Plan, IaC & Rollback](Image%20Week%2012%20-%20Session%2002%20-%20Planning%20-%20Deployment%20Plan%2C%20IaC%20%26%20Rollback.png)
+
+**Session 2 — Planning: deployment plan, infrastructure as code and rollback.** We saw the deployment pipeline as one artifact promoted through develop, QA and production (only the configuration changes), infrastructure as code (Terraform, Compose, Kubernetes manifests) kept in Git and reviewed, how to choose a strategy and rehearse the rollback with its exact command, and how to slice the deployment stories of MVP 3 with acceptance criteria. The real-life case was "the snowflake": a production server configured by hand that nobody can rebuild.
+
+What I learned: a rollback that has not been rehearsed does not exist. For my domains the plan promotes the same image instead of rebuilding it, and changes the schema with expand/contract so that rolling back the application never needs a schema rollback.
+
 ### Week 12 - Session 1 - Optional Activity
 
 Zero-downtime deployment of `professional-management-api` on a production-like host (the whole platform in containers), with blue-green and health checks:
