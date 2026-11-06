@@ -1,0 +1,18 @@
+== 1. build 127.0.0.1:5055/code-corhuila/telemed-ia-document-generation-api:v0.14.0-rc.1 (sha-396858c)
+sha256:44e11e0dd4b73718bd5306910f140c0076d816c0cfb214429de0ef0f281312ac
+== 2. image scan (HIGH/CRITICAL with a fix)
+scan: FAIL - the release job stops here
+(--scan-report-only: continuing to rehearse the remaining steps)
+== 3. push
+digest: 127.0.0.1:5055/code-corhuila/telemed-ia-document-generation-api@sha256:44e11e0dd4b73718bd5306910f140c0076d816c0cfb214429de0ef0f281312ac
+== 4. deploy by digest
+(the first deployment attempt of this rehearsal failed because its env file carried the JWT key on several lines; with the key on one line the same digest was deployed:)
+PASS  GET /health answers 200 (200)
+PASS  GET /health reports UP (UP)
+PASS  anonymous /api/documents is 401 (401)
+PASS  401 carries the error envelope (yes)
+PASS  X-Correlation-Id is echoed (smoke-1)
+PASS  authorized /api/documents is 200 (200)
+PASS  management health is 200 (200)
+PASS  metrics expose document_generation_ (yes)
+smoke: 8 passed, 0 failed

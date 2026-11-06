@@ -1,0 +1,18 @@
+== 1. build 127.0.0.1:5055/code-corhuila/telemed-ia-professional-management-api:v0.14.0-rc.1 (sha-eeb08c7)
+sha256:599f97951b2528a50f381a78cbfe965cb96191b52ede8b7bf34a12206458ff5f
+== 2. image scan (HIGH/CRITICAL with a fix)
+scan: FAIL - the release job stops here
+(--scan-report-only: continuing to rehearse the remaining steps)
+== 3. push
+digest: 127.0.0.1:5055/code-corhuila/telemed-ia-professional-management-api@sha256:599f97951b2528a50f381a78cbfe965cb96191b52ede8b7bf34a12206458ff5f
+== 4. deploy by digest
+== 5. smoke test
+PASS  GET /health answers 200 (200)
+PASS  GET /health reports UP (UP)
+PASS  anonymous /api/professionals is 401 (401)
+PASS  401 carries the error envelope (yes)
+PASS  X-Correlation-Id is echoed (smoke-1)
+PASS  authorized /api/professionals is 200 (200)
+PASS  management health is 200 (200)
+PASS  metrics expose http_server_requests_seconds (yes)
+smoke: 8 passed, 0 failed
