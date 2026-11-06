@@ -1,0 +1,16 @@
+# .github/workflows/ci.yml of telemed-ia-document-generation-api
+name: CI
+on:
+  pull_request:
+    branches: [develop, qa, main]
+permissions:
+  contents: read
+jobs:
+  gates:
+    uses: ./.github/workflows/java-service-gates.yml
+    with:
+      db-repository: code-corhuila/telemed-ia-document-generation-db
+      app-user: document_generation_app
+      changelog-table: databasechangelog_document_generation
+      needs-storage: true
+      needs-broker: true

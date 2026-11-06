@@ -1,0 +1,4 @@
+self-hosted-runner:
+  # Runner of the qa environment where the tagged image is deployed.
+  labels:
+    - telemed-ia-qa

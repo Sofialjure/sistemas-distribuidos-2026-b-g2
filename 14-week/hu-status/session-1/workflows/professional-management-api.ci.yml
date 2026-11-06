@@ -1,0 +1,14 @@
+# .github/workflows/ci.yml of telemed-ia-professional-management-api
+name: CI
+on:
+  pull_request:
+    branches: [develop, qa, main]
+permissions:
+  contents: read
+jobs:
+  gates:
+    uses: ./.github/workflows/java-service-gates.yml
+    with:
+      db-repository: code-corhuila/telemed-ia-professional-management-db
+      app-user: professional_management_app
+      changelog-table: databasechangelog_professional_management

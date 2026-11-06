@@ -1,0 +1,20 @@
+{
+  "telemed-ia-document-generation-api": {
+    "document-generation-adapters": 94.8,
+    "document-generation-app": 87.3,
+    "document-generation-core": 96.2
+  },
+  "telemed-ia-document-generation-portal": {
+    "branches": 84.6,
+    "lines": 93.6
+  },
+  "telemed-ia-professional-management-api": {
+    "professional-management-adapters": 52.8,
+    "professional-management-app": 90.7,
+    "professional-management-core": 93.2
+  },
+  "telemed-ia-professional-management-portal": {
+    "branches": 90.5,
+    "lines": 97.6
+  }
+}

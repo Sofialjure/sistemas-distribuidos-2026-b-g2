@@ -1,0 +1,63 @@
+# .github/workflows/release.yml of a service repository (Professional Management or Document
+# Generation API). A tag vX.Y.Z on `main` builds the image once, scans it, pushes it to GHCR and
+# deploys exactly that image; the smoke test decides whether the deployment stays.
+name: Release
+
+on:
+  push:
+    tags: ['v[0-9]+.[0-9]+.[0-9]+']
+
+permissions:
+  contents: read
+
+env:
+  IMAGE: ghcr.io/${{ github.repository }}
+
+jobs:
+  image:
+    name: Build, scan and push the tagged image
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      digest: ${{ steps.push.outputs.digest }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Only tags on main are released
+        run: |
+          git fetch --no-tags origin main
+          git merge-base --is-ancestor "$GITHUB_SHA" origin/main
+      - name: Build the image from deploy/Dockerfile
+        run: docker build -f deploy/Dockerfile -t "$IMAGE:${GITHUB_REF_NAME}" -t "$IMAGE:sha-${GITHUB_SHA::7}" .
+      - name: Image scan (trivy, HIGH/CRITICAL with a fix) blocks the release
+        run: |
+          docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy:0.57.1 image --quiet \
+            --severity HIGH,CRITICAL --ignore-unfixed --exit-code 1 "$IMAGE:${GITHUB_REF_NAME}"
+      - uses: docker/login-action@v3
+        with: { registry: ghcr.io, username: '${{ github.actor }}', password: '${{ secrets.GITHUB_TOKEN }}' }
+      - id: push
+        run: |
+          docker push "$IMAGE:${GITHUB_REF_NAME}"
+          docker push "$IMAGE:sha-${GITHUB_SHA::7}"
+          echo "digest=$(docker inspect --format '{{index .RepoDigests 0}}' "$IMAGE:${GITHUB_REF_NAME}")" >> "$GITHUB_OUTPUT"
+
+  deploy-qa:
+    name: Deploy the tagged image to qa and smoke test it
+    needs: image
+    runs-on: [self-hosted, telemed-ia-qa]
+    environment: qa
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Pull the exact image that was scanned (by digest)
+        run: docker pull "${{ needs.image.outputs.digest }}"
+      - name: Replace the running container (deploy/compose.yml reads the image from IMAGE_REF)
+        env:
+          IMAGE_REF: ${{ needs.image.outputs.digest }}
+        run: |
+          docker compose -f deploy/compose.yml --env-file "$HOME/telemed-ia/env/qa.env" up -d --no-build \
+            --pull never --force-recreate
+      - name: Smoke test (a failure fails the deployment; automatic rollback is story CICD-07)
+        run: bash .github/scripts/smoke-test.sh http://localhost:8080 http://localhost:9081

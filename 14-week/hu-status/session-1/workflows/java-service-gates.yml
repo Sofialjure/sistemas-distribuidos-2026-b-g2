@@ -1,0 +1,156 @@
+# Reusable PR gates of a Java 21 / Maven service (Professional Management, Document Generation).
+# Each job is a blocking gate; the final job `gates` is the single required status check.
+name: java-service-gates
+
+on:
+  workflow_call:
+    inputs:
+      db-repository:
+        description: The -db repository whose migrations the integration tests need
+        required: true
+        type: string
+      app-user:
+        description: Application role of the domain (e.g. document_generation_app)
+        required: true
+        type: string
+      changelog-table:
+        description: Liquibase history table of the domain
+        required: true
+        type: string
+      needs-storage:
+        description: Start RustFS for the storage integration tests
+        required: false
+        default: false
+        type: boolean
+      needs-broker:
+        description: Start RabbitMQ for the publisher integration tests
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+concurrency:
+  group: gates-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-types:
+    name: Build and types (javac, enforcer)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: '21', cache: maven }
+      - run: mvn -B -ntp -DskipTests test-compile
+
+  lint:
+    name: Lint (Checkstyle)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: '21', cache: maven }
+      - run: |
+          mvn -B -ntp org.apache.maven.plugins:maven-checkstyle-plugin:3.6.0:check \
+            -Dcheckstyle.config.location=.github/lint/checkstyle.xml \
+            -Dcheckstyle.includeTestSourceDirectory=true -Dcheckstyle.failOnViolation=true
+
+  tests-and-coverage:
+    name: Tests (unit, HTTP, contract, integration) and coverage
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env: { POSTGRES_USER: postgres, POSTGRES_PASSWORD: postgres, POSTGRES_DB: telemed_ia }
+        ports: ['5432:5432']
+        options: --health-cmd "pg_isready -U postgres" --health-interval 5s --health-timeout 5s --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with: { repository: '${{ inputs.db-repository }}', ref: develop, path: db }
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: '21', cache: maven }
+      - name: Start RustFS and RabbitMQ when the service needs them
+        run: |
+          if [ "${{ inputs.needs-storage }}" = true ]; then
+            docker run -d -p 9000:9000 -e RUSTFS_ACCESS_KEY=ci-access -e RUSTFS_SECRET_KEY=ci-secret-key rustfs/rustfs:1.0.3
+            {
+              echo "TEST_STORAGE_ENDPOINT=http://localhost:9000"
+              echo "TEST_STORAGE_PUBLIC_ENDPOINT=http://localhost:9000"
+              echo "TEST_STORAGE_ACCESS_KEY=ci-access"
+              echo "TEST_STORAGE_SECRET_KEY=ci-secret-key"
+            } >> "$GITHUB_ENV"
+          fi
+          if [ "${{ inputs.needs-broker }}" = true ]; then
+            docker run -d -p 5672:5672 -e RABBITMQ_DEFAULT_USER=ci -e RABBITMQ_DEFAULT_PASS=ci-only rabbitmq:3.12-alpine
+            echo "TEST_RABBITMQ_URL=amqp://ci:ci-only@localhost:5672" >> "$GITHUB_ENV"
+          fi
+      - name: Migrate the domain schema (roles as in telemed-ia-infra-postgres)
+        env:
+          APP_USER: ${{ inputs.app-user }}
+          CHANGELOG_TABLE: ${{ inputs.changelog-table }}
+        run: |
+          PW=$(openssl rand -hex 16); echo "::add-mask::$PW"
+          DOMAIN="${APP_USER%_app}"
+          sudo apt-get install -y -qq postgresql-client >/dev/null
+          PGPASSWORD=postgres psql -h localhost -U postgres -d telemed_ia -v ON_ERROR_STOP=1 <<SQL
+          CREATE ROLE ${APP_USER} LOGIN PASSWORD '${PW}';
+          CREATE ROLE ${DOMAIN}_reader NOLOGIN; CREATE ROLE ${DOMAIN}_writer NOLOGIN;
+          GRANT ${DOMAIN}_reader, ${DOMAIN}_writer TO ${APP_USER} WITH ADMIN OPTION;
+          GRANT CREATE ON DATABASE telemed_ia TO ${APP_USER};
+          CREATE SCHEMA ${DOMAIN} AUTHORIZATION ${APP_USER};
+          ALTER ROLE ${APP_USER} SET search_path = ${DOMAIN};
+          SQL
+          docker run --rm --network host -v "$PWD/db:/liquibase/changelog-root" -w /liquibase/changelog-root \
+            liquibase/liquibase:4.31 --url=jdbc:postgresql://localhost:5432/telemed_ia \
+            --username="$APP_USER" --password="$PW" --changelog-file=changelog/changelog-master.yaml \
+            --database-changelog-table-name="$CHANGELOG_TABLE" \
+            --database-changelog-lock-table-name="${CHANGELOG_TABLE/databasechangelog/databasechangeloglock}" update
+          echo "TEST_DATABASE_URL=jdbc:postgresql://localhost:5432/telemed_ia?user=${APP_USER}&password=${PW}" >> "$GITHUB_ENV"
+      - name: Tests with the JaCoCo agent
+        run: |
+          mvn -B -ntp org.jacoco:jacoco-maven-plugin:0.8.12:prepare-agent verify \
+            org.jacoco:jacoco-maven-plugin:0.8.12:report
+      - name: Coverage does not drop below the recorded baseline (DoD)
+        run: python3 .github/scripts/coverage-gate.py . .github/coverage-baseline.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: { name: coverage-and-test-reports, path: '**/target/site/jacoco/**' }
+
+  secrets:
+    name: Secret scan (gitleaks, full history)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - run: docker run --rm -v "$PWD:/repo:ro" zricethezav/gitleaks:v8.21.2 git /repo --no-banner --redact --exit-code 1
+
+  dependencies:
+    name: Dependency scan of the packaged jar (trivy, HIGH/CRITICAL with a fix)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: '21', cache: maven }
+      - run: mvn -B -ntp -DskipTests package
+      - run: |
+          JAR=$(find . -path './*-app/target/*-api.jar' | head -1)
+          docker run --rm -v "$PWD:/src:ro" aquasec/trivy:0.57.1 rootfs --quiet --scanners vuln \
+            --severity HIGH,CRITICAL --ignore-unfixed --exit-code 1 "/src/$JAR"
+
+  gates:
+    name: gates
+    if: always()
+    needs: [build-and-types, lint, tests-and-coverage, secrets, dependencies]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Every blocking gate passed
+        run: |
+          echo '${{ toJSON(needs) }}' | python3 -c "import json,sys; r={k:v['result'] for k,v in json.load(sys.stdin).items()}; print(r); sys.exit(0 if set(r.values())=={'success'} else 1)"

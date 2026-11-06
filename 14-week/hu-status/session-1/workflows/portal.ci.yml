@@ -1,0 +1,11 @@
+# .github/workflows/ci.yml of telemed-ia-document-generation-portal and
+# telemed-ia-professional-management-portal
+name: CI
+on:
+  pull_request:
+    branches: [develop, qa, main]
+permissions:
+  contents: read
+jobs:
+  gates:
+    uses: ./.github/workflows/angular-portal-gates.yml

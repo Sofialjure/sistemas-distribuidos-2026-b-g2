@@ -1,0 +1,64 @@
+# Reusable PR gates of an Angular 21 portal (Native Federation remote).
+# Each job is a blocking gate; the final job `gates` is the single required status check.
+name: angular-portal-gates
+
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: gates-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  checks:
+    name: Types, lint, tests with coverage and build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '22', cache: npm }
+      - run: npm ci --no-audit --no-fund
+      - name: Types
+        run: npx tsc -p tsconfig.app.json --noEmit && npx tsc -p tsconfig.spec.json --noEmit
+      - name: Lint (typescript-eslint + angular-eslint)
+        run: npx eslint "src/**/*.ts" "src/**/*.html"
+      - name: Tests with coverage
+        run: npx ng test --watch=false --coverage --coverage-reporters=json-summary --coverage-reporters=text-summary
+      - name: Coverage does not drop below the recorded baseline (DoD)
+        run: |
+          python3 .github/scripts/portal-coverage-gate.py "$(ls coverage/*/coverage-summary.json)"             .github/coverage-baseline.json "${{ github.event.repository.name }}"
+      - name: Build (federated remote)
+        run: npm run build
+
+  dependencies:
+    name: Runtime dependency audit (npm audit, high)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '22', cache: npm }
+      - run: npm audit --omit=dev --audit-level=high
+
+  secrets:
+    name: Secret scan (gitleaks, full history)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - run: docker run --rm -v "$PWD:/repo:ro" zricethezav/gitleaks:v8.21.2 git /repo --no-banner --redact --exit-code 1
+
+  gates:
+    name: gates
+    if: always()
+    needs: [checks, dependencies, secrets]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Every blocking gate passed
+        run: |
+          echo '${{ toJSON(needs) }}' | python3 -c "import json,sys; r={k:v['result'] for k,v in json.load(sys.stdin).items()}; print(r); sys.exit(0 if set(r.values())=={'success'} else 1)"
