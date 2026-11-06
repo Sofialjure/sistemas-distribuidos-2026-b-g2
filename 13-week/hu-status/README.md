@@ -71,6 +71,20 @@
     - UUID identifiers and observability in Patient Management (patient-management-db #20, patient-management-api #27 to #29, patient-management-portal #8, #9, docs #123);
     - the appointments upstream in the gateway (api-gateway #18), and the PostgreSQL exporter (infra-postgres #29).
 
+### Week 13 - What we covered and what I learned
+
+![Image Week 13 - Session 01 - Security in Distributed Systems - Authn, Authz & Zero Trust](Image%20Week%2013%20-%20Session%2001%20-%20Security%20in%20Distributed%20Systems%20-%20Authn%2C%20Authz%20%26%20Zero%20Trust.png)
+
+**Session 1 — Security in distributed systems: authentication, authorization and zero trust.** This week we saw authentication (proving who you are) versus authorization (deciding what you may do), tokens (OAuth2 for delegated access, OIDC for identity, JWT as a signed token with claims), the gateway as a choke point that is not the only guard, service-to-service trust (mTLS or short-lived service tokens, least privilege, rotated secrets) and the common vulnerabilities with defense in depth. The real-life case was the "internal" endpoint left without authentication because "it is only called internally".
+
+What I learned: zero trust means every service validates the token and authorizes the action itself. Probing my services from inside the platform network (20 probes, 19 passed) found a real issue: the PDF generation endpoint validates the body before authorizing, so an unauthorized caller learns the request shape.
+
+![Image Week 13 - Session 02 - Planning - Threat Modeling & Security Backlog](Image%20Week%2013%20-%20Session%2002%20-%20Planning%20-%20Threat%20Modeling%20%26%20Security%20Backlog.png)
+
+**Session 2 — Planning: threat modeling and the security backlog.** We saw how to map the attack surface and its trust boundaries (threats concentrate where data crosses a boundary), how to find threats with STRIDE (spoofing, tampering, repudiation, information disclosure, denial of service, elevation of privilege) with a mitigation for each, how to turn them into a security backlog prioritized by likelihood × impact, and how to plan security checks into CI (dependency scan, secret scan, static analysis, authorization tests). The real-life case was the review two days before launch that finds an IDOR.
+
+What I learned: security designed in is cheap and bolted on at the end is a crisis. The STRIDE of my boundary (worker → document generation) ranked a stolen service token first (risk 6) and turned it into stories with testable criteria, and running gitleaks and trivy showed which checks would already fail a build.
+
 ### Week 13 - Session 1 - Optional Activity
 
 Authentication, authorization and zero trust in the two services I own, verified with **20 live probes** run from a container inside the platform network (so the calls that skip the gateway behave like a compromised neighbour):
