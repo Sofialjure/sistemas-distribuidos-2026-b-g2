@@ -45,6 +45,29 @@
     - after the platform run, the consultation migration restored and its change moved to `V015` (medical-consultation-db #9), the outbox flow of consultations (medical-consultation-api #23), the consultation portal paths (medical-consultation-portal #6), the `start_period` of RabbitMQ and a dead-letter replay in the worker (worker #12, #13), the `422` for a reused `Idempotency-Key` in appointments (appointment-scheduling-api #24) and the shell proxy (front #44);
     - the review answers of his STRIDE (docs #156).
 
+### Week 14 - Session 1 - Optional Activity
+
+CI/CD for the four code repositories I own (two APIs, two portals), with **every gate run for real** on fresh clones of `develop` (Actions cannot run in the organization, so each job's exact commands were executed locally with the same service containers):
+
+- reusable workflows with one blocking job per gate — build, types, lint (Checkstyle / ESLint), tests with coverage against a per-module baseline, gitleaks and a dependency scan of the packaged jar (`npm audit` for the portals) — and one required check `gates`; all six workflows pass actionlint with 0 errors;
+- results: tests 338 and 181 (0 skipped) and 26 and 42 in the portals, coverage and secrets green; **lint fails** in Document Generation (2 non-exhaustive switches) and **dependencies fail** in all four (45 and 35 HIGH/CRITICAL in the jars, mostly the Spring Boot 3.5.6 set; Spring Boot 3.5.16 alone takes Document Generation from 45 to 26);
+- release of the tagged image: build, image scan, push, deploy by digest and smoke test, rehearsed for `v0.14.0-rc.1` of both APIs with a local registry — the scan blocks the release today (correct), and with the scan in report-only the deployed digests pass the smoke test 8 of 8.
+
+See: [Week 14 - Session 1 - Optional Activity](Optional%20Activity%20Week%2014%20-%20Session%201.md)
+
+### Week 14 - Session 2 - Optional Activity
+
+Pipeline finalized and CI/CD stories sliced for MVP 3:
+
+- every Definition of Done item mapped to its blocking gate (or explicitly to a review gate);
+- branch protection read through the API — no status checks anywhere and 0 approvals on `develop`/`qa` — and a proposal for `develop`, `qa` and `main` (required `gates`, approvals, linear history) with a dry-run script for the administrator;
+- path-filtered pipelines per service and per contract (actionlint 0 errors);
+- cross-service contract tests with real interactions captured from the deployed images: 9 of 11 pass, and the 2 failures are a real drift — `consultation-service.yaml` does not declare the `{data}` envelope that `medical-consultation-api` returns;
+- a smoke test, 8 of 8 on both images, also as a PR job with only PostgreSQL and the migrations;
+- eleven CI/CD stories in five prioritized slices.
+
+See: [Week 14 - Session 2 - Optional Activity](Optional%20Activity%20Week%2014%20-%20Session%202.md)
+
 ## 3. Blockers and risks
 - GitHub Actions cannot run because of the organization's billing limit; every check was run locally and recorded in each PR.
 - The promotion from `qa` to `main` needs the professor's approval (norm); it has not started.
@@ -63,6 +86,7 @@
 - [x] No secrets; config via environment variables
 
 ## 6. Evidence links
+- Optional activities: [Session 1](Optional%20Activity%20Week%2014%20-%20Session%201.md) ([files](session-1/README.md)), [Session 2](Optional%20Activity%20Week%2014%20-%20Session%202.md) ([files](session-2/README.md))
 - Observability decisions: https://github.com/code-corhuila/telemed-ia-docs/pull/161 and https://github.com/code-corhuila/telemed-ia-docs/pull/162
 - Threat model: https://github.com/code-corhuila/telemed-ia-docs/pull/144
 - Documentation aligned with the running platform: https://github.com/code-corhuila/telemed-ia-docs/pull/163, https://github.com/code-corhuila/telemed-ia-docs/pull/164, https://github.com/code-corhuila/telemed-ia-docs/pull/165, https://github.com/code-corhuila/telemed-ia-docs/pull/166, https://github.com/code-corhuila/telemed-ia-docs/pull/167 and https://github.com/code-corhuila/telemed-ia-docs/pull/168
