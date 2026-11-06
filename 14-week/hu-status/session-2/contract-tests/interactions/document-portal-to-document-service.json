@@ -1,0 +1,95 @@
+[
+  {
+    "method": "GET",
+    "path": "/",
+    "request": {
+      "headers": {
+        "Authorization": "Bearer <redacted>",
+        "X-Correlation-Id": "contract-1c435eb7"
+      },
+      "body": null
+    },
+    "response": {
+      "status": 200,
+      "body": {
+        "data": [
+          {
+            "id": "c6fd2f64-f73a-41fa-8295-417fae8911e8",
+            "summaryId": "7268bd10-98c0-4774-8943-644cce15b52a",
+            "patientId": "b0000000-0000-4000-8000-000000000001",
+            "format": "PDF",
+            "status": "GENERATING",
+            "retryCount": 0,
+            "createdAt": "2026-11-06T20:45:34.906991Z"
+          },
+          {
+            "id": "190bd41b-fdff-46b9-b686-7a9c796b1bf8",
+            "summaryId": "41b07f89-79e6-4cd5-907d-2e64e2a08486",
+            "patientId": "b0000000-0000-4000-8000-000000000001",
+            "format": "PDF",
+            "status": "ERROR",
+            "retryCount": 2,
+            "createdAt": "2026-11-06T20:45:22.636424Z"
+          }
+        ],
+        "meta": {
+          "page": 1,
+          "limit": 20,
+          "total": 2,
+          "totalPages": 1
+        }
+      }
+    },
+    "consumer": "telemed-ia-document-generation-portal",
+    "provider": "document-service",
+    "contract": "document-service.yaml"
+  },
+  {
+    "method": "GET",
+    "path": "/c6fd2f64-f73a-41fa-8295-417fae8911e8",
+    "request": {
+      "headers": {
+        "Authorization": "Bearer <redacted>",
+        "X-Correlation-Id": "contract-c95aabc3"
+      },
+      "body": null
+    },
+    "response": {
+      "status": 200,
+      "body": {
+        "id": "c6fd2f64-f73a-41fa-8295-417fae8911e8",
+        "summaryId": "7268bd10-98c0-4774-8943-644cce15b52a",
+        "patientId": "b0000000-0000-4000-8000-000000000001",
+        "format": "PDF",
+        "status": "GENERATING",
+        "retryCount": 0,
+        "createdAt": "2026-11-06T20:45:34.906991Z"
+      }
+    },
+    "consumer": "telemed-ia-document-generation-portal",
+    "provider": "document-service",
+    "contract": "document-service.yaml"
+  },
+  {
+    "method": "GET",
+    "path": "/c6fd2f64-f73a-41fa-8295-417fae8911e8/download",
+    "request": {
+      "headers": {
+        "Authorization": "Bearer <redacted>",
+        "X-Correlation-Id": "contract-03797c49"
+      },
+      "body": null
+    },
+    "response": {
+      "status": 422,
+      "body": {
+        "error": "BUSINESS_RULE_VIOLATION",
+        "message": "the document is not available for download",
+        "traceId": "contract-03797c49"
+      }
+    },
+    "consumer": "telemed-ia-document-generation-portal",
+    "provider": "document-service",
+    "contract": "document-service.yaml"
+  }
+]

@@ -1,0 +1,64 @@
+[
+  {
+    "method": "POST",
+    "path": "/generate",
+    "request": {
+      "headers": {
+        "Authorization": "Bearer <redacted>",
+        "X-Correlation-Id": "contract-71fb8944",
+        "Idempotency-Key": "791f6c34-bcdd-44d4-b939-4359daf93dbf",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "summaryId": "7268bd10-98c0-4774-8943-644cce15b52a",
+        "patientId": "b0000000-0000-4000-8000-000000000001"
+      }
+    },
+    "response": {
+      "status": 201,
+      "body": {
+        "id": "c6fd2f64-f73a-41fa-8295-417fae8911e8",
+        "summaryId": "7268bd10-98c0-4774-8943-644cce15b52a",
+        "patientId": "b0000000-0000-4000-8000-000000000001",
+        "format": "PDF",
+        "status": "PENDING",
+        "retryCount": 0,
+        "createdAt": "2026-11-06T20:45:34.906991Z"
+      }
+    },
+    "consumer": "telemed-ia-worker",
+    "provider": "document-service",
+    "contract": "document-service.yaml"
+  },
+  {
+    "method": "POST",
+    "path": "/generate",
+    "request": {
+      "headers": {
+        "Authorization": "Bearer <redacted>",
+        "X-Correlation-Id": "contract-93b16022",
+        "Idempotency-Key": "791f6c34-bcdd-44d4-b939-4359daf93dbf",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "summaryId": "7268bd10-98c0-4774-8943-644cce15b52a",
+        "patientId": "b0000000-0000-4000-8000-000000000001"
+      }
+    },
+    "response": {
+      "status": 200,
+      "body": {
+        "id": "c6fd2f64-f73a-41fa-8295-417fae8911e8",
+        "summaryId": "7268bd10-98c0-4774-8943-644cce15b52a",
+        "patientId": "b0000000-0000-4000-8000-000000000001",
+        "format": "PDF",
+        "status": "GENERATING",
+        "retryCount": 0,
+        "createdAt": "2026-11-06T20:45:34.906991Z"
+      }
+    },
+    "consumer": "telemed-ia-worker",
+    "provider": "document-service",
+    "contract": "document-service.yaml"
+  }
+]

@@ -1,0 +1,9 @@
+PASS  GET /health answers 200 (200)
+PASS  GET /health reports UP (UP)
+PASS  anonymous /api/professionals is 401 (401)
+PASS  401 carries the error envelope (yes)
+PASS  X-Correlation-Id is echoed (smoke-1)
+PASS  authorized /api/professionals is 200 (200)
+PASS  management health is 200 (200)
+PASS  metrics expose http_server_requests_seconds (yes)
+smoke: 8 passed, 0 failed

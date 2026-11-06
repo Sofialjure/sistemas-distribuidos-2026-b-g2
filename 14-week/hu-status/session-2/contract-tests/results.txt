@@ -1,0 +1,32 @@
+$ python contract-check.py telemed-ia-docs/07-api/contracts/openapi interactions   # telemed-ia-docs main 2afe6f7
+PASS  telemed-ia-document-generation-portal -> document-service: GET / (200)  [/]
+PASS  telemed-ia-document-generation-portal -> document-service: GET /c6fd2f64-f73a-41fa-8295-417fae8911e8 (200)  [/{id}]
+PASS  telemed-ia-document-generation-portal -> document-service: GET /c6fd2f64-f73a-41fa-8295-417fae8911e8/download (422)  [/{id}/download]
+FAIL  document-service -> consultation-service: GET /post-summaries/e0000000-0000-0000-0000-000000000102 (200)  [/post-summaries/{id}]
+        - response (root): 'id' is a required property
+        - response (root): 'consultationId' is a required property
+        - response (root): 'appointmentId' is a required property
+        - response (root): 'patientId' is a required property
+        - response (root): 'preconsultationSummaryId' is a required property
+        - response (root): 'attentionSummaryId' is a required property
+        - response (root): 'generatedAt' is a required property
+FAIL  document-service -> consultation-service: GET /00000000-0000-0000-0000-000000009001/attention (200)  [/{id}/attention]
+        - response (root): 'id' is a required property
+        - response (root): 'recommendations' is a required property
+        - response (root): 'medications' is a required property
+PASS  telemed-ia-professional-management-portal -> professional-service: GET / (200)  [/]
+PASS  telemed-ia-professional-management-portal -> professional-service: GET /50d5cf9e-22bf-4e73-b6d2-4a86a3117dfc (404)  [/{id}]
+PASS  telemed-ia-professional-management-portal -> professional-service: PATCH /50d5cf9e-22bf-4e73-b6d2-4a86a3117dfc/status (404)  [/{id}/status]
+PASS  telemed-ia-professional-management-portal -> professional-service: POST /admin/register (503)  [/admin/register]
+PASS  telemed-ia-worker -> document-service: POST /generate (201)  [/generate]
+PASS  telemed-ia-worker -> document-service: POST /generate (200)  [/generate]
+contract broken (2 failing)
+exit=1
+
+# Mutation: the worker request without summaryId and without Idempotency-Key
+FAIL  telemed-ia-worker -> document-service: POST /generate (201)  [/generate]
+        - required header Idempotency-Key not sent
+        - request (root): 'summaryId' is a required property
+PASS  telemed-ia-worker -> document-service: POST /generate (200)  [/generate]
+contract broken (1 failing)
+exit=1

@@ -1,0 +1,106 @@
+[
+  {
+    "method": "GET",
+    "path": "/",
+    "request": {
+      "headers": {
+        "Authorization": "Bearer <redacted>",
+        "X-Correlation-Id": "contract-08e5ff56"
+      },
+      "body": null
+    },
+    "response": {
+      "status": 200,
+      "body": {
+        "data": [],
+        "meta": {
+          "page": 1,
+          "limit": 20,
+          "total": 0,
+          "totalPages": 0
+        }
+      }
+    },
+    "consumer": "telemed-ia-professional-management-portal",
+    "provider": "professional-service",
+    "contract": "professional-service.yaml"
+  },
+  {
+    "method": "GET",
+    "path": "/50d5cf9e-22bf-4e73-b6d2-4a86a3117dfc",
+    "request": {
+      "headers": {
+        "Authorization": "Bearer <redacted>",
+        "X-Correlation-Id": "contract-f457743d"
+      },
+      "body": null
+    },
+    "response": {
+      "status": 404,
+      "body": {
+        "error": "NOT_FOUND",
+        "message": "the requested resource does not exist",
+        "traceId": "contract-f457743d"
+      }
+    },
+    "consumer": "telemed-ia-professional-management-portal",
+    "provider": "professional-service",
+    "contract": "professional-service.yaml"
+  },
+  {
+    "method": "PATCH",
+    "path": "/50d5cf9e-22bf-4e73-b6d2-4a86a3117dfc/status",
+    "request": {
+      "headers": {
+        "Authorization": "Bearer <redacted>",
+        "X-Correlation-Id": "contract-8cb7d49e",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "status": "INACTIVE"
+      }
+    },
+    "response": {
+      "status": 404,
+      "body": {
+        "error": "NOT_FOUND",
+        "message": "the requested resource does not exist",
+        "traceId": "contract-8cb7d49e"
+      }
+    },
+    "consumer": "telemed-ia-professional-management-portal",
+    "provider": "professional-service",
+    "contract": "professional-service.yaml"
+  },
+  {
+    "method": "POST",
+    "path": "/admin/register",
+    "request": {
+      "headers": {
+        "Authorization": "Bearer <redacted>",
+        "X-Correlation-Id": "contract-569fe4ec",
+        "Idempotency-Key": "contract-f95e491745c9422ba851069bcdbb53c5",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "fullName": "Contract Check",
+        "email": "contractfb7626@example.test",
+        "identityDocument": "952413078",
+        "password": "Contract-Check-2026",
+        "licenseNumber": "CC-bd1b4c",
+        "yearsExperience": 3
+      }
+    },
+    "response": {
+      "status": 503,
+      "body": {
+        "error": "SERVICE_UNAVAILABLE",
+        "message": "a required service is unavailable, try again later",
+        "traceId": "contract-569fe4ec"
+      }
+    },
+    "consumer": "telemed-ia-professional-management-portal",
+    "provider": "professional-service",
+    "contract": "professional-service.yaml"
+  }
+]
