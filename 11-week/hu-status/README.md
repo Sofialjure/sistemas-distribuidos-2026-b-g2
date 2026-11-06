@@ -69,6 +69,20 @@
   - service token from the identity service.
   - Verified end to end with the real identity, medical consultation, PostgreSQL and RustFS services.
 
+### Week 11 - What we covered and what I learned
+
+![Image Week 11 - Session 01 - Observability - Logs, Metrics & Distributed Tracing](Image%20Week%2011%20-%20Session%2001%20-%20Observability%20-%20Logs%2C%20Metrics%20%26%20Distributed%20Tracing.png)
+
+**Session 1 — Observability: logs, metrics and distributed tracing.** This week we saw the difference between monitoring (answering known questions, such as "is the CPU high?") and observability (being able to ask new questions of a running system), and the three pillars: logs tell what happened, metrics show trends and drive alerts, and traces follow one request across services. We also saw structured logs with a trace/correlation id, the four golden signals (latency, traffic, errors, saturation), and the common mistakes: plain-text logs, no correlation id, alerting on causes such as CPU, and dashboards nobody reads.
+
+What I learned: a trace answers "where did the time go?" without guessing. In my own services one trace showed that a list of professionals of 508 ms spent 106 ms getting the service token from identity. I also learned to keep ids out of metric labels, because each value creates a new series; ids belong in logs and traces.
+
+![Image Week 11 - Session 02 - Planning - SLIs, SLOs, Error Budgets & Alerting](Image%20Week%2011%20-%20Session%2002%20-%20Planning%20-%20SLIs%2C%20SLOs%2C%20Error%20Budgets%20%26%20Alerting.png)
+
+**Session 2 — Planning: SLIs, SLOs, error budgets and alerting.** We saw that an SLI is what we measure, an SLO is the target over a window (for example 99.5% over 30 days), and the error budget is the unreliability we accept (100% − SLO). We saw how to choose SLOs that users feel (availability, latency, freshness), how to alert on symptoms with a trigger, a severity, an owner and a runbook, and how a runbook turns panic into a checklist (symptoms, how to confirm, first mitigations, escalation, verify recovery). The real-life case was "the pager that cried wolf": fifty cause-based alerts a night until a real outage is missed.
+
+What I learned: fewer, meaningful alerts beat a noisy wall. Alerting on the burn rate of the error budget (14.4 over one hour, 6 over six hours) pages only when users are really affected, and a drill proved it: with identity stopped, the burn rate reached 168 and the page fired after five minutes.
+
 ### Week 11 - Session 1 - Optional Activity
 
 Observability (logs, metrics and distributed tracing) shown in the real services I own, on the platform running all the TeleMed IA services in containers:
