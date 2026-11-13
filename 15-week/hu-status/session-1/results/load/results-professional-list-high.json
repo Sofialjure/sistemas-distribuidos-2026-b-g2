@@ -1,0 +1,18 @@
+{
+ "target": "http://professional-management-api:8080/api/professionals?limit=20",
+ "rows": [
+  {
+   "offered_rps": 400,
+   "achieved_rps": 398.8,
+   "requests": 8000,
+   "p50_ms": 1037.6,
+   "p95_ms": 1548.8,
+   "p99_ms": 1736.2,
+   "availability_pct": 100.0,
+   "non_200_below_500": 0,
+   "slo_met": false
+  }
+ ],
+ "highest_within_slo": null,
+ "knee": 400
+}

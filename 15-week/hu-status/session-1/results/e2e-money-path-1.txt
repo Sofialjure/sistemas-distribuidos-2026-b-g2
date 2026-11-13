@@ -1,0 +1,16 @@
+PASS  administrator signs in
+PASS  saga answers 201
+PASS  saga ends COMPLETED
+PASS  all three steps done
+PASS  same key and body is a replay (200)
+PASS  same key with another body is 422
+PASS  the new professional signs in
+PASS  /me returns the new profile
+PASS  newest first, with the account name
+PASS  the administrator sees the e-mail
+PASS  a professional does not see e-mails
+PASS  a professional cannot change a status (403)
+PASS  the administrator deactivates the profile
+PASS  and activates it again
+PASS  every step shares the correlation id in the workflow log
+--- 15 passed, 0 failed

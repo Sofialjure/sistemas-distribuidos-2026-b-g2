@@ -1,0 +1,8 @@
+# mvn -B test (Testcontainers 1.20.4, postgres:16-alpine) - 2026-11-13 00:13 -0500
+[main] INFO tc.testcontainers/ryuk:0.11.0 - Container testcontainers/ryuk:0.11.0 started in PT1.020821S
+[main] INFO tc.postgres:16-alpine - Container postgres:16-alpine started in PT2.2862307S
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 9.601 s -- in week15.DocumentGenerationDbIT
+[main] INFO tc.postgres:16-alpine - Container postgres:16-alpine started in PT2.2072898S
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 5.135 s -- in week15.ProfessionalManagementDbIT
+[INFO] Tests run: 11, Failures: 0, Errors: 0, Skipped: 0
+[INFO] BUILD SUCCESS

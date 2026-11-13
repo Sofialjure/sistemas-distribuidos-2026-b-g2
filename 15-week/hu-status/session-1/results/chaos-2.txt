@@ -1,0 +1,14 @@
+PASS  consultation in progress
+--- 00:33:24 docker stop s2-telemed-ia-document-generation-api-document-generation-api-1
+PASS  the attention is recorded with the PDF service down
+PASS  the post-summary is created anyway
+      parked in post-consultation-summary-queue.dlq after 15 s (3 attempts by the worker)
+PASS  the event is parked in the dead-letter queue, not lost
+PASS  the patient's documents answer an error, not a hang
+--- 00:33:42 docker start s2-telemed-ia-document-generation-api-document-generation-api-1
+      PDF AVAILABLE 14 s after the restart (dead-letter replay)
+PASS  recovery: the PDF is generated
+PASS  recovery: exactly one document for the summary
+PASS  recovery: the dead-letter queue is empty again
+PASS  recovery: the patient downloads it
+--- 9 passed, 0 failed

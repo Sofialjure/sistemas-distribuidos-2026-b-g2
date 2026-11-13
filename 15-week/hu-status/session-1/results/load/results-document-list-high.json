@@ -1,0 +1,18 @@
+{
+ "target": "http://document-generation-api:8080/api/documents?limit=20",
+ "rows": [
+  {
+   "offered_rps": 700,
+   "achieved_rps": 251.7,
+   "requests": 14000,
+   "p50_ms": 27852.2,
+   "p95_ms": 35762.3,
+   "p99_ms": 36145.1,
+   "availability_pct": 99.86,
+   "non_200_below_500": 0,
+   "slo_met": false
+  }
+ ],
+ "highest_within_slo": null,
+ "knee": 700
+}

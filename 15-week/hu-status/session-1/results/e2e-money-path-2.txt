@@ -1,0 +1,16 @@
+PASS  professional onboarded
+PASS  patient registers
+PASS  appointment booked and CONFIRMED
+PASS  professional starts the consultation
+PASS  attention recorded
+PASS  post-summary created automatically
+PASS  summary event published by consultation
+PASS  worker requested the PDF and it is AVAILABLE
+PASS  ConsultationPdfGenerated published from my outbox
+PASS  notifications put it in the patient's inbox
+PASS  the appointment becomes COMPLETED
+PASS  the patient lists the document
+PASS  the signed URL returns the PDF
+PASS  another patient gets 403 on the document (DEC-004)
+PASS  the professional cannot list patient documents
+--- 15 passed, 0 failed

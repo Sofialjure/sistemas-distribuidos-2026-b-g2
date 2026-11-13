@@ -1,0 +1,17 @@
+PASS  steady state: the list carries account names
+--- 00:31:46 docker stop s2-telemed-ia-identity-and-access-api-identity-api-1
+PASS  the list still answers 200
+PASS  the list degrades to profiles without names
+      20 list reads with identity down: average 1548 ms each
+      registration answered in 397 ms
+PASS  registration fails fast with 503
+PASS  no profile was stored for it
+PASS  the saga stops at create-account and leaves no profile
+      saga status: COMPENSATED
+PASS  documents are not affected
+PASS  a new sign-in is not possible (the blast radius)
+--- 00:32:41 docker start s2-telemed-ia-identity-and-access-api-identity-api-1
+      names back 18 s after the restart
+PASS  recovery: the list carries names again
+PASS  recovery: the same registration now succeeds
+--- 10 passed, 0 failed

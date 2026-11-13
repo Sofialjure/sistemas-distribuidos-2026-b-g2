@@ -1,0 +1,33 @@
+# Platform under test: every telemed-ia-* repository at develop, cloned on 2026-11-12 (develop == qa tree in my six repositories)
+| repository | commit |
+|---|---|
+| telemed-ia-api-gateway | `d70567c` |
+| telemed-ia-appointment-scheduling-api | `d4b494e` |
+| telemed-ia-appointment-scheduling-db | `a44e28b` |
+| telemed-ia-appointment-scheduling-portal | `5601f7a` |
+| telemed-ia-document-generation-api | `1fca000` |
+| telemed-ia-document-generation-db | `99af8f4` |
+| telemed-ia-document-generation-portal | `a32f379` |
+| telemed-ia-front | `3892b34` |
+| telemed-ia-identity-and-access-api | `465166b` |
+| telemed-ia-identity-and-access-db | `c0f7d3a` |
+| telemed-ia-identity-and-access-portal | `49b5101` |
+| telemed-ia-infra-mongo | `cdbe00b` |
+| telemed-ia-infra-postgres | `effdc08` |
+| telemed-ia-intelligent-agent-api | `02ce9a3` |
+| telemed-ia-intelligent-agent-db | `343f837` |
+| telemed-ia-intelligent-agent-portal | `2c1efb3` |
+| telemed-ia-medical-consultation-api | `7f1ec43` |
+| telemed-ia-medical-consultation-db | `b70d72f` |
+| telemed-ia-medical-consultation-portal | `cba9f83` |
+| telemed-ia-notifications-api | `53be620` |
+| telemed-ia-notifications-db | `ff0dc8b` |
+| telemed-ia-notifications-portal | `9b61edb` |
+| telemed-ia-patient-management-api | `3439c87` |
+| telemed-ia-patient-management-db | `5d30ff8` |
+| telemed-ia-patient-management-portal | `1a3b4d9` |
+| telemed-ia-professional-management-api | `bf45488` |
+| telemed-ia-professional-management-db | `af53500` |
+| telemed-ia-professional-management-portal | `ef1e012` |
+| telemed-ia-worker | `12d2de1` |
+| telemed-ia-workflow | `ebb86a1` |

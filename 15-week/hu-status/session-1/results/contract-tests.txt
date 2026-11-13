@@ -1,0 +1,15 @@
+# Contract tests - 2026-11-13 00:15 -0500
+
+## Copies against telemed-ia-docs main (e58fb65), ignoring the two header comment lines
+- professional-management-api _shared.yaml: 9 differing lines
+- professional-management-api professional-service.yaml: 0 differing lines
+- document-generation-api _shared.yaml: 62 differing lines
+- document-generation-api document-service.yaml: 0 differing lines
+
+## Suites (develop of 2026-11-12, mvn -B verify)
+- professional-management-api ProfessionalServiceContractTest: 38 tests, 0 failures
+- document-generation-api DocumentServiceContractTest: 28 tests, 0 failures
+
+## Suites against the current docs contract (copies replaced in a throwaway clone)
+- professional-management: Tests run: 38, Failures: 0, Errors: 0, Skipped: 0 BUILD SUCCESS
+- document-generation: Tests run: 28, Failures: 0, Errors: 0, Skipped: 0 BUILD SUCCESS

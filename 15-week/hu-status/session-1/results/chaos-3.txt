@@ -1,0 +1,11 @@
+--- 00:34:22 docker stop s2-telemed-ia-worker-rabbitmq-1
+PASS  the attention is recorded with the broker down
+PASS  the summary event waits in the consultation outbox
+PASS  no document yet
+--- 00:34:36 docker start s2-telemed-ia-worker-rabbitmq-1
+      PDF AVAILABLE 21 s after the broker restart
+PASS  recovery: the summary event is published
+PASS  recovery: the PDF is generated once
+PASS  recovery: my relay reconnected and published ConsultationPdfGenerated
+PASS  recovery: notifications received it
+--- 7 passed, 0 failed
