@@ -1,0 +1,14 @@
+# Release 3.0.0 database rollback rehearsal - 2026-11-13 00:44 -0500
+# mvn -B test of session-1/integration-testcontainers (ReleaseRollbackIT: main v2.0.0 -> qa 3.0.0 -> rollback-count -> forward)
+[main] INFO tc.testcontainers/ryuk:0.11.0 - Container testcontainers/ryuk:0.11.0 started in PT0.9151729S
+[main] INFO tc.postgres:16-alpine - Container postgres:16-alpine started in PT2.1842063S
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 10.90 s -- in week15.DocumentGenerationDbIT
+[main] INFO tc.postgres:16-alpine - Container postgres:16-alpine started in PT2.0800592S
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 5.530 s -- in week15.ProfessionalManagementDbIT
+[main] INFO tc.postgres:16-alpine - Container postgres:16-alpine started in PT2.0788465S
+[main] INFO tc.postgres:16-alpine - Container postgres:16-alpine started in PT2.058083S
+ERROR: Rollback ddl-alter-024 refused: professional holds UUID identifiers with no numeric equivalent; remove those rows first.
+[main] INFO tc.postgres:16-alpine - Container postgres:16-alpine started in PT2.1960148S
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 12.77 s -- in week15.ReleaseRollbackIT
+[INFO] Tests run: 14, Failures: 0, Errors: 0, Skipped: 0
+[INFO] BUILD SUCCESS

@@ -1,0 +1,23 @@
+## Professional Management (through the gateway)
+PASS  list without a token -> 401
+PASS  list with a forged signature -> 401
+PASS  list with alg none -> 401
+PASS  register as PATIENT with a valid body -> 403
+PASS  register as PROFESSIONAL with a valid body -> 403
+FAIL  register as PATIENT with an empty body -> 403 (same pattern as W13) (expected '403', got '400')
+PASS  status change as PATIENT -> 403
+PASS  /me as PATIENT -> 403
+PASS  internal saga route is not published by the gateway -> 404
+PASS  internal saga route with an ADMIN token and a valid body, inside the network -> 403
+FAIL  internal saga route with an ADMIN token and an empty body -> 403 (same pattern) (expected '403', got '400')
+## Document Generation
+PASS  documents without a token -> 401
+PASS  documents with a forged signature -> 401
+PASS  documents as PROFESSIONAL -> 403
+PASS  documents as ADMIN -> 403 (patients only, DEC-004)
+PASS  another patient's download -> 403
+PASS  generate as PATIENT with a valid body -> 403
+FAIL  generate as PATIENT with an empty body -> 403 (W13 finding: validation before authorization) (expected '403', got '400')
+PASS  generate with a SERVICE token of another client (notifications) -> 403
+PASS  pause switch on the management port without a token -> reachable (open story #151)
+--- 17 passed, 3 failed

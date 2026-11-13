@@ -1,0 +1,31 @@
+=== 00:41:34 step 3: load starts (100 rps on each list, 90 s)
+=== 00:41:44 step 1: money path 1 under load
+--- 15 passed, 0 failed
+=== 00:41:49 step 4: chaos 2 under load (document API killed mid-journey)
+PASS  consultation in progress
+--- 00:41:57 docker stop s2-telemed-ia-document-generation-api-document-generation-api-1
+PASS  the attention is recorded with the PDF service down
+PASS  the post-summary is created anyway
+      parked in post-consultation-summary-queue.dlq after 68 s (3 attempts by the worker)
+PASS  the event is parked in the dead-letter queue, not lost
+PASS  the patient's documents answer an error, not a hang
+--- 00:43:13 docker start s2-telemed-ia-document-generation-api-document-generation-api-1
+      PDF AVAILABLE 46 s after the restart (dead-letter replay)
+PASS  recovery: the PDF is generated
+PASS  recovery: exactly one document for the summary
+PASS  recovery: the dead-letter queue is empty again
+PASS  recovery: the patient downloads it
+--- 9 passed, 0 failed
+=== 00:44:07 load results
+# professional-list: http://professional-management-api:8080/api/professionals?limit=20  (steps of 90 s, SLO p95 < 500 ms and availability >= 99.5%)
+| offered rps | achieved rps | requests | p50 ms | p95 ms | p99 ms | availability % | other non-200 | SLO |
+|---|---|---|---|---|---|---|---|---|
+| 100 | 99.8 | 9000 | 23.3 | 231.6 | 908.8 | 100.0 | 0 | met |
+
+Highest step within the SLO: 100 rps; knee: not reached
+# document-list: http://document-generation-api:8080/api/documents?limit=20  (steps of 90 s, SLO p95 < 500 ms and availability >= 99.5%)
+| offered rps | achieved rps | requests | p50 ms | p95 ms | p99 ms | availability % | other non-200 | SLO |
+|---|---|---|---|---|---|---|---|---|
+| 100 | 89.4 | 9000 | 9893.7 | 18072.5 | 19084.1 | 24.88 | 0 | MISSED |
+
+Highest step within the SLO: None rps; knee: 100
