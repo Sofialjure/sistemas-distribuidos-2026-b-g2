@@ -1,0 +1,45 @@
+# Contract job for document-generation-api and professional-management-api (one caller per repo).
+# 1) the contract copies used by the tests must equal 07-api/contracts/openapi of telemed-ia-docs;
+# 2) only the contract suites run (Anexo C 5.3.12 + every response validated against the OpenAPI).
+name: contract-tests
+
+on:
+  pull_request:
+    branches: [develop, qa, main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      APP_MODULE: ${{ vars.APP_MODULE }}          # document-generation-app | professional-management-app
+      CONTRACT_SUITE: ${{ vars.CONTRACT_SUITE }}  # DocumentServiceContractTest | ProfessionalServiceContractTest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: code-corhuila/telemed-ia-docs
+          ref: main
+          path: .contract-source
+      - name: The contract copies match telemed-ia-docs
+        run: |
+          status=0
+          for f in "$APP_MODULE"/src/test/resources/contract/*.yaml; do
+            source=".contract-source/07-api/contracts/openapi/$(basename "$f")"
+            # the copies start with two comment lines that name the docs commit
+            if ! diff -q <(grep -v '^# ' "$f") <(grep -v '^# ' "$source") >/dev/null; then
+              echo "::error file=$f::differs from telemed-ia-docs main"; status=1
+            fi
+          done
+          exit $status
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+      - name: Contract suite
+        run: mvn -B test -pl "$APP_MODULE" -am "-Dtest=${CONTRACT_SUITE}*" -Dsurefire.failIfNoSpecifiedTests=false
