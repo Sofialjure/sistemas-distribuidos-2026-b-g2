@@ -28,7 +28,7 @@
     - promotion to `qa`: professional-management-api #60 (part 21 of 21) and document-generation-api #66 (part 22 of 22).
   - **Release 3.1.0 opened** in both APIs (professional-management-api #61, document-generation-api #67): `release/3.1.0` cut from `main` with `cherry-pick -x` of the commits validated in `qa`, with scope, deployment and rollback plan; waiting for the professor's approval to merge and tag `v3.1.0`.
   - **Shared documentation organized for the final deliverables** (docs #219): a system `CHANGELOG.md` for the 31 repositories (Keep a Changelog + SemVer) with the release state of MVP 3 per repository, every tag and date checked against the repositories, linked from the docs README and the project-control change log.
-  - **Two videos for the final presentation**: the promotional video of TeleMed IA and the video that explains how the platform is deployed.
+  - **Two videos for the final presentation**: the promotional video of TeleMed IA and the video that explains how the platform is deployed ([folder with both videos](https://drive.google.com/drive/folders/1mk0eBnivnoNO80U8w_EzH3xVMZ8d2sE9?usp=sharing)).
 - Team work this week:
   - **Juliana (@JulianaFerro1428):** the 3.0.0 releases of the PostgreSQL and MongoDB infrastructure (infra-postgres #44, infra-mongo #17) and the notifications database 2.0.0 (#10), and the `release/3.0.0` PRs of identity and access, intelligent agent, notifications, workflow, the API gateway and the front shell.
   - **José Miguel (@BondrewdXD):** the `qa → main` promotions of appointment scheduling, medical consultation, patient management and the worker (ten PRs).
@@ -58,4 +58,5 @@
 - Promotion to `qa`: https://github.com/code-corhuila/telemed-ia-professional-management-api/pull/60 and https://github.com/code-corhuila/telemed-ia-document-generation-api/pull/66
 - Release 3.1.0: https://github.com/code-corhuila/telemed-ia-professional-management-api/pull/61 and https://github.com/code-corhuila/telemed-ia-document-generation-api/pull/67
 - Changelog: https://github.com/code-corhuila/telemed-ia-docs/pull/219
+- Videos (promotional and deployment explanation): https://drive.google.com/drive/folders/1mk0eBnivnoNO80U8w_EzH3xVMZ8d2sE9?usp=sharing
 - Team work: https://github.com/code-corhuila/telemed-ia-infra-postgres/pull/44, https://github.com/code-corhuila/telemed-ia-infra-mongo/pull/17, https://github.com/code-corhuila/telemed-ia-appointment-scheduling-api/pull/37
